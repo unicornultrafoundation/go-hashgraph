@@ -1,4 +1,4 @@
-# U2U consensus 
+# U2U Consensus Protocol
 
-A base library defines interfaces and modules of aBFT U2U consensus protocol.
-Part of U2U Consensus-as-a-Service for distributed applications.
+An implementation of U2U Consensus protocol based on Hashgraph, aBFT and DPOS
+
