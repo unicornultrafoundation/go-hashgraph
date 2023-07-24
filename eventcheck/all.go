@@ -4,7 +4,7 @@ import (
 	"github.com/unicornultrafoundation/go-hashgraph/eventcheck/basiccheck"
 	"github.com/unicornultrafoundation/go-hashgraph/eventcheck/epochcheck"
 	"github.com/unicornultrafoundation/go-hashgraph/eventcheck/parentscheck"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/dag"
+	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
 )
 
 // Checkers is collection of all the checkers

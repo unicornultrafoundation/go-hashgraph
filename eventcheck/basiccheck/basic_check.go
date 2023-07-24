@@ -4,7 +4,7 @@ import (
 	"errors"
 	"math"
 
-	"github.com/unicornultrafoundation/go-hashgraph/internal/dag"
+	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
 )
 
 var (

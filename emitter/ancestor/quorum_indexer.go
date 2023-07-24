@@ -6,9 +6,9 @@ import (
 
 	"github.com/unicornultrafoundation/go-hashgraph/consensus/dagidx"
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/dag"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/idx"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/pos"
+	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
+	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
+	"github.com/unicornultrafoundation/go-hashgraph/native/pos"
 	"github.com/unicornultrafoundation/go-hashgraph/utils/wmedian"
 )
 

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/dag"
+	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
 )
 
 func TestEventsByParents(t *testing.T) {

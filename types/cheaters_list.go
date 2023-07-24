@@ -2,7 +2,7 @@ package types
 
 import (
 	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/idx"
+	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 )
 
 // Cheaters is a slice type for storing cheaters list.

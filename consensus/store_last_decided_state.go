@@ -1,7 +1,7 @@
 package consensus
 
 import (
-	"github.com/unicornultrafoundation/go-hashgraph/internal/idx"
+	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 )
 
 const dsKey = "d"

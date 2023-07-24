@@ -2,8 +2,8 @@ package consensus
 
 import (
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/idx"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/pos"
+	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
+	"github.com/unicornultrafoundation/go-hashgraph/native/pos"
 )
 
 // onFrameDecided moves LastDecidedFrameN to frame.

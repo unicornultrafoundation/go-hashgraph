@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/dag"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/dag/tdag"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/idx"
+	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
+	"github.com/unicornultrafoundation/go-hashgraph/native/dag/tdag"
+	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 	"github.com/unicornultrafoundation/go-hashgraph/utils/cachescale"
 	"github.com/unicornultrafoundation/go-hashgraph/utils/datasemaphore"
 )

@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/dag"
+	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
 )
 
 type eventFilterFn func(event dag.Event) bool

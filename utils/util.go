@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/idx"
+	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 )
 
 // NameOf returns human readable string representation.

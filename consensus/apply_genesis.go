@@ -3,8 +3,8 @@ package consensus
 import (
 	"fmt"
 
-	"github.com/unicornultrafoundation/go-hashgraph/internal/idx"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/pos"
+	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
+	"github.com/unicornultrafoundation/go-hashgraph/native/pos"
 )
 
 // Genesis stores genesis state

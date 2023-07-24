@@ -1,7 +1,7 @@
 package wmedian
 
 import (
-	"github.com/unicornultrafoundation/go-hashgraph/internal/pos"
+	"github.com/unicornultrafoundation/go-hashgraph/native/pos"
 )
 
 type WeightedValue interface {

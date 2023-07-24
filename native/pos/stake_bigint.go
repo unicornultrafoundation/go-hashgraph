@@ -3,7 +3,7 @@ package pos
 import (
 	"math/big"
 
-	"github.com/unicornultrafoundation/go-hashgraph/internal/idx"
+	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 )
 
 // ValidatorsBuilderBig is a helper to create Validators object out of bigint numbers

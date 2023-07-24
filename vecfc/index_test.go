@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/dag"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/dag/tdag"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/pos"
+	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
+	"github.com/unicornultrafoundation/go-hashgraph/native/dag/tdag"
+	"github.com/unicornultrafoundation/go-hashgraph/native/pos"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/memorydb"
 )
 

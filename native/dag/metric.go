@@ -3,7 +3,7 @@ package dag
 import (
 	"fmt"
 
-	"github.com/unicornultrafoundation/go-hashgraph/internal/idx"
+	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 )
 
 type Metric struct {

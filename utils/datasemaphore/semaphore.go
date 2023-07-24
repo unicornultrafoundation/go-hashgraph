@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/unicornultrafoundation/go-hashgraph/internal/dag"
+	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
 )
 
 type DataSemaphore struct {

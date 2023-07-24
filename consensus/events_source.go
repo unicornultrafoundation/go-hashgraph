@@ -2,7 +2,7 @@ package consensus
 
 import (
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/dag"
+	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
 )
 
 // EventSource is a callback for getting events from an external storage.

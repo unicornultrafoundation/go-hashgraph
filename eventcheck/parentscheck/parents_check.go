@@ -3,8 +3,8 @@ package parentscheck
 import (
 	"errors"
 
-	"github.com/unicornultrafoundation/go-hashgraph/internal/dag"
-	"github.com/unicornultrafoundation/go-hashgraph/internal/idx"
+	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
+	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 )
 
 var (

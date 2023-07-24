@@ -1,6 +1,6 @@
 package pos
 
-import "github.com/unicornultrafoundation/go-hashgraph/internal/idx"
+import "github.com/unicornultrafoundation/go-hashgraph/native/idx"
 
 type (
 	validator struct {
