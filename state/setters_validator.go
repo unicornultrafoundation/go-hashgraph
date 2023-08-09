@@ -162,3 +162,21 @@ func (s *State) UpdateSlashingAtIndex(idx uint64, val uint64) {
 
 	s.slashings[idx] = val
 }
+
+// SetWithdrawals updates the withdrawal requests list in the U2U chain state.
+// This function acquires a lock to ensure thread safety while modifying withdrawal data in the State.
+func (s *State) SetWithdrawals(withdrawals []*types.Withdrawal) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.withdrawals = withdrawals
+}
+
+// AppendWithdrawal adds a new withdrawal request to the list.
+// This function acquires a lock to ensure thread safety while modifying the withdrawal list in the State.
+func (s *State) AppendWithdrawal(withdrawal *types.Withdrawal) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.withdrawals = append(s.withdrawals, withdrawal)
+}
