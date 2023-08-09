@@ -16,3 +16,131 @@ func (s *State) SetValidators(vals []*types.Validator) {
 	s.validators = vals
 	s.valMap = stateutil.ValidatorIndexMap(vals)
 }
+
+// AppendValidator adds a new validator to the list of active validators.
+// This function acquires a lock to ensure thread safety while modifying the validator list and index map in the State.
+func (s *State) AppendValidator(val *types.Validator) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.validators = append(s.validators, val)
+	s.valMap[val.Address] = uint64(len(s.validators) - 1)
+}
+
+// UpdateValidator updates the details of a validator at the specified index.
+// This function acquires a lock to ensure thread safety while modifying the validator list in the State.
+func (s *State) UpdateValidator(idx uint64, val *types.Validator) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.validators[idx] = val
+}
+
+// SetDelegators updates the list of delegators in the U2U chain state.
+// This function acquires a lock to ensure thread safety while modifying delegator-related data in the State.
+func (s *State) SetDelegators(dels []*types.Delegator) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	s.delegators = dels
+	s.delMap = stateutil.DelegatorIndexMap(dels)
+}
+
+// AppendDelegator adds a new delegator to the list of delegators.
+// This function acquires a lock to ensure thread safety while modifying the delegator list and index map in the State.
+func (s *State) AppendDelegator(del *types.Delegator) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.delegators = append(s.delegators, del)
+	s.valMap[del.Address] = uint64(len(s.delegators) - 1)
+}
+
+// UpdateDelegator updates the details of a delegator at the specified index.
+// This function acquires a lock to ensure thread safety while modifying the delegator list in the State.
+func (s *State) UpdateDelegator(idx uint64, del *types.Delegator) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.delegators[idx] = del
+}
+
+// SetDelegations updates the list of delegations in the U2U chain state.
+// This function acquires a lock to ensure thread safety while modifying delegation-related data in the State.
+func (s *State) SetDelegations(delegations []*types.Delegation) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	s.delegations = delegations
+}
+
+// AppendDelegation adds a new delegation to the list of delegations.
+// This function acquires a lock to ensure thread safety while modifying the delegation list and index map in the State.
+func (s *State) AppendDelegation(del *types.Delegation) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.delegations = append(s.delegations, del)
+	s.delValMap[del.ValidatorIndex][del.DelegatorIndex] = uint64(len(s.delegations) - 1)
+}
+
+// UpdateDelegation updates the details of a delegation at the specified index.
+// This function acquires a lock to ensure thread safety while modifying the delegation list in the State.
+func (s *State) UpdateDelegation(idx uint64, delegation *types.Delegation) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.delegations[idx] = delegation
+}
+
+// SetStakedBalances updates the staked balance list in the U2U chain state.
+// This function acquires a lock to ensure thread safety while modifying staked balance data in the State.
+func (s *State) SetStakedBalances(bals []uint64) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.stakedBalances = bals
+}
+
+// AppendStakedBalances adds a new staked balance entry to the list.
+// This function acquires a lock to ensure thread safety while modifying the staked balance list in the State.
+func (s *State) AppendStakedBalance(bal uint64) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.stakedBalances = append(s.stakedBalances, bal)
+}
+
+// UpdateStakedBalances updates the staked balance at the specified index.
+// This function acquires a lock to ensure thread safety while modifying the staked balance list in the State.
+func (s *State) UpdateStakedBalance(idx uint64, bal uint64) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.stakedBalances[idx] = bal
+}
+
+// SetAccumulatedRewards updates the accumulated rewards list in the U2U chain state.
+// This function acquires a lock to ensure thread safety while modifying accumulated rewards data in the State.
+func (s *State) SetAccumulatedRewards(accumulatedRewards []uint64) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.accumulatedRewards = accumulatedRewards
+}
+
+// AppendAccumulatedReward adds a new accumulated reward entry to the list.
+// This function acquires a lock to ensure thread safety while modifying the accumulated rewards list in the State.
+func (s *State) AppendAccumulatedReward(accumulatedReward uint64) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.accumulatedRewards = append(s.accumulatedRewards, accumulatedReward)
+}
+
+// UpdateAccumulatedReward updates the accumulated reward at the specified index.
+// This function acquires a lock to ensure thread safety while modifying the accumulated rewards list in the State.
+func (s *State) UpdateAccumulatedReward(idx uint64, accumulatedReward uint64) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.accumulatedRewards[idx] = accumulatedReward
+}

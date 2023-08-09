@@ -26,12 +26,12 @@ func (s *State) StakedBalances() []uint64 {
 	return s.stakedBalances
 }
 
-// Slashing retrieves information about validator slashing events in the U2U network.
-func (s *State) Slashing() []uint64 {
+// Slashings retrieves information about validator slashing events in the U2U network.
+func (s *State) Slashings() []uint64 {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	return s.slashing
+	return s.slashings
 }
 
 // Withdrawals retrieves the list of withdrawal requests from delegators on the U2U network.
@@ -40,4 +40,15 @@ func (s *State) Withdrawals() []*types.Withdrawal {
 	defer s.lock.Unlock()
 
 	return s.withdrawals
+}
+
+// Delegations retrieves the list of delegations from the U2U chain's state.
+// This function acquires a lock to ensure thread safety while accessing the delegation data.
+// It returns a slice of pointers to Delegation objects representing delegation details.
+// To maintain data integrity, make sure to use this function within a context that handles concurrent access properly.
+func (s *State) Delegations() []*types.Delegation {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	return s.delegations
 }
