@@ -42,21 +42,19 @@ func ProcessDelegate(s *state.State, delegate *types.DelegateDto) (*state.State,
 
 	delegationIdx, ok := s.DelegationIndexByDelegator(delegatorIdx, validatorIdx)
 
-	validator := s.ValidatorAtIndex(validatorIdx)
-
 	if !ok {
 		s.AppendDelegation(&types.Delegation{
 			ValidatorIndex:                validatorIdx,
 			DelegatorIndex:                delegatorIdx,
 			Amount:                        delegate.Amount,
-			LastAccumulatedRewardPerToken: validator.AccumulatedRewardPerToken,
+			LastAccumulatedRewardPerToken: s.AccumulatedRewardByIndex(validatorIdx),
 		})
 	} else {
 		// @todo implement function withdraw reward process
 
 		delegation := s.DelegationAtIndex(delegationIdx)
 		delegation.Amount = delegation.Amount + delegate.Amount
-		delegation.LastAccumulatedRewardPerToken = validator.AccumulatedRewardPerToken
+		delegation.LastAccumulatedRewardPerToken = s.AccumulatedRewardByIndex(validatorIdx)
 		s.UpdateDelegationAtIndex(delegationIdx, delegation)
 	}
 
