@@ -30,6 +30,8 @@ func ProcessCreateValidator(s *state.State, createValidatorDto *types.CreateVali
 		Slashed: false,
 	})
 
+	s.AppendStakedBalance(0)
+
 	return ProcessDelegate(s, &types.DelegateDto{
 		ValidatorAddress: createValidatorDto.Address,
 		DelegatorAddress: createValidatorDto.Address,

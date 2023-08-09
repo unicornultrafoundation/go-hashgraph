@@ -71,5 +71,6 @@ func ProcessUndelegate(s *state.State, undelegateDto *types.UnDelegateDto) (*sta
 		Epoch:          s.Epoch(),
 	})
 
+	s.UpdateStakedBalanceAtIndex(validatorIdx, s.StakedBalanceAtIndex(validatorIdx)-undelegateAmount)
 	return s, nil
 }

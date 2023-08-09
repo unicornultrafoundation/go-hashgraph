@@ -66,5 +66,6 @@ func ProcessDelegate(s *state.State, delegate *types.DelegateDto) (*state.State,
 		s.UpdateDelegationAtIndex(delegationIdx, delegation)
 	}
 
+	s.UpdateStakedBalanceAtIndex(validatorIdx, s.StakedBalanceAtIndex(validatorIdx)+delegate.Amount)
 	return s, nil
 }
