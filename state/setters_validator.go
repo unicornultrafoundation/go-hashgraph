@@ -27,9 +27,9 @@ func (s *State) AppendValidator(val *types.Validator) {
 	s.valMap[val.Address] = uint64(len(s.validators) - 1)
 }
 
-// UpdateValidator updates the details of a validator at the specified index.
+// UpdateValidatorAtIndex updates the details of a validator at the specified index.
 // This function acquires a lock to ensure thread safety while modifying the validator list in the State.
-func (s *State) UpdateValidator(idx uint64, val *types.Validator) {
+func (s *State) UpdateValidatorAtIndex(idx uint64, val *types.Validator) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -55,9 +55,9 @@ func (s *State) AppendDelegator(del *types.Delegator) {
 	s.valMap[del.Address] = uint64(len(s.delegators) - 1)
 }
 
-// UpdateDelegator updates the details of a delegator at the specified index.
+// UpdateDelegatorAtIndex updates the details of a delegator at the specified index.
 // This function acquires a lock to ensure thread safety while modifying the delegator list in the State.
-func (s *State) UpdateDelegator(idx uint64, del *types.Delegator) {
+func (s *State) UpdateDelegatorAtIndex(idx uint64, del *types.Delegator) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -82,9 +82,9 @@ func (s *State) AppendDelegation(del *types.Delegation) {
 	s.delValMap[del.ValidatorIndex][del.DelegatorIndex] = uint64(len(s.delegations) - 1)
 }
 
-// UpdateDelegation updates the details of a delegation at the specified index.
+// UpdateDelegationAtIndex updates the details of a delegation at the specified index.
 // This function acquires a lock to ensure thread safety while modifying the delegation list in the State.
-func (s *State) UpdateDelegation(idx uint64, delegation *types.Delegation) {
+func (s *State) UpdateDelegationAtIndex(idx uint64, delegation *types.Delegation) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -109,9 +109,9 @@ func (s *State) AppendStakedBalance(bal uint64) {
 	s.stakedBalances = append(s.stakedBalances, bal)
 }
 
-// UpdateStakedBalances updates the staked balance at the specified index.
+// UpdateStakedBalanceAtIndex updates the staked balance at the specified index.
 // This function acquires a lock to ensure thread safety while modifying the staked balance list in the State.
-func (s *State) UpdateStakedBalance(idx uint64, bal uint64) {
+func (s *State) UpdateStakedBalanceAtIndex(idx uint64, bal uint64) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -136,11 +136,29 @@ func (s *State) AppendAccumulatedReward(accumulatedReward uint64) {
 	s.accumulatedRewards = append(s.accumulatedRewards, accumulatedReward)
 }
 
-// UpdateAccumulatedReward updates the accumulated reward at the specified index.
+// UpdateAccumulatedRewardAtIndex updates the accumulated reward at the specified index.
 // This function acquires a lock to ensure thread safety while modifying the accumulated rewards list in the State.
-func (s *State) UpdateAccumulatedReward(idx uint64, accumulatedReward uint64) {
+func (s *State) UpdateAccumulatedRewardAtIndex(idx uint64, accumulatedReward uint64) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
 	s.accumulatedRewards[idx] = accumulatedReward
+}
+
+// SetSlashings updates the slashing information list in the U2U chain state.
+// This function acquires a lock to ensure thread safety while modifying slashing data in the State.
+func (s *State) SetSlashings(slashings []uint64) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.slashings = slashings
+}
+
+// UpdateSlashingAtIndex updates the slashing value at the specified index.
+// This function acquires a lock to ensure thread safety while modifying the slashing data in the State.
+func (s *State) UpdateSlashingAtIndex(idx uint64, val uint64) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.slashings[idx] = val
 }
