@@ -12,3 +12,15 @@ type Delegation struct {
 type Delegator struct {
 	Address common.Address
 }
+
+type DelegateDto struct {
+	ValidatorAddress common.Address
+	DelegatorAddress common.Address
+	Amount           uint64
+}
+
+type UnDelegateDto struct {
+	ValidatorAddress common.Address
+	DelegatorAddress common.Address
+	Amount           uint64
+}

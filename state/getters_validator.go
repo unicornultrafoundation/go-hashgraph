@@ -149,3 +149,32 @@ func (s *State) AccumulatedRewardByIndex(idx uint64) uint64 {
 
 	return s.accumulatedRewards[idx]
 }
+
+// Delegators retrieves the list of delegators from the U2U chain's state.
+// This function acquires a lock to ensure thread safety while accessing the delegator list.
+// It returns a slice of pointers to Delegator objects representing delegator details.
+func (s *State) Delegators() []*types.Delegator {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	return s.delegators
+}
+
+// DelegatorIndexByAddress retrieves the index of a delegator by their address and a boolean indicating its existence.
+// This function acquires a lock to ensure thread safety while accessing the delegator address map.
+func (s *State) DelegatorIndexByAddress(addr common.Address) (uint64, bool) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	idx, ok := s.delMap[addr]
+	return idx, ok
+}
+
+// DelegatorAtIndex retrieves a delegator by its index from the list.
+// This function acquires a lock to ensure thread safety while accessing delegator details.
+func (s *State) DelegatorAtIndex(idx uint64) *types.Delegator {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	return s.delegators[idx]
+}
