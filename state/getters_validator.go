@@ -178,3 +178,25 @@ func (s *State) DelegatorAtIndex(idx uint64) *types.Delegator {
 
 	return s.delegators[idx]
 }
+
+// WithdrawalRewards retrieves the list of withdrawal rewards from the U2U chain's state.
+// This function acquires a lock to ensure thread safety while accessing the withdrawal reward data.
+// It returns a slice of pointers to WithdrawalReward objects representing withdrawal reward details.
+// Make sure to use this function within a context that handles concurrent access properly.
+func (s *State) WithdrawalRewards() []*types.WithdrawalReward {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	return s.withdrawalRewards
+}
+
+// WithdrawalRewardAtIndex retrieves a specific withdrawal reward by its index in the list from the U2U chain's state.
+// This function acquires a lock to ensure thread safety while accessing the withdrawal reward data.
+// It takes an index as input and returns the WithdrawalReward pointer at that index.
+// Make sure to use this function within a context that handles concurrent access properly.
+func (s *State) WithdrawalRewardAtIndex(idx uint64) *types.WithdrawalReward {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	return s.withdrawalRewards[idx]
+}

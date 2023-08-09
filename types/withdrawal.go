@@ -10,3 +10,8 @@ type Withdrawal struct {
 	Amount         uint64
 	Epoch          idx.Epoch
 }
+
+type WithdrawalReward struct {
+	DelegatorIndex uint64
+	Amount         uint64
+}

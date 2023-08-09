@@ -28,3 +28,8 @@ type UnDelegateDto struct {
 	DelegatorAddress common.Address // Ethereum address of the delegator making the undelegation.
 	Amount           uint64         // Amount of tokens being undelegated.
 }
+
+type WithdrawalRewardDto struct {
+	ValidatorAddress common.Address
+	DelegatorAddress common.Address
+}

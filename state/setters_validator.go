@@ -180,3 +180,25 @@ func (s *State) AppendWithdrawal(withdrawal *types.Withdrawal) {
 
 	s.withdrawals = append(s.withdrawals, withdrawal)
 }
+
+// SetWithdrawalRewards sets the list of withdrawal rewards in the U2U chain's state.
+// This function acquires a lock to ensure thread safety while updating withdrawal reward data.
+// It takes a slice of WithdrawalReward pointers as input and updates the internal withdrawal rewards list accordingly.
+// Make sure to use this function within a context that handles concurrent access appropriately.
+func (s *State) SetWithdrawalRewards(withdrawalRewards []*types.WithdrawalReward) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.withdrawalRewards = withdrawalRewards
+}
+
+// AppendWithdrawalReward appends a withdrawal reward to the list of withdrawal rewards in the U2U chain's state.
+// This function acquires a lock to ensure thread safety while appending withdrawal reward data.
+// It takes a WithdrawalReward pointer as input and adds it to the end of the internal withdrawal rewards list.
+// Make sure to use this function within a context that handles concurrent access appropriately.
+func (s *State) AppendWithdrawalReward(withdrawalReward *types.WithdrawalReward) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.withdrawalRewards = append(s.withdrawalRewards, withdrawalReward)
+}

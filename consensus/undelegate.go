@@ -26,6 +26,8 @@ func ProcessUndelegates(s *state.State, undelegateDtos []*types.UnDelegateDto) (
 // Then, it appends a withdrawal request to the state with the undelegated amount.
 // The function returns the updated state after processing the undelegation action.
 func ProcessUndelegate(s *state.State, undelegateDto *types.UnDelegateDto) (*state.State, error) {
+	var err error
+
 	validatorIdx, ok := s.ValidatorIndexByAddress(undelegateDto.ValidatorAddress)
 	if !ok {
 		return s, nil
@@ -41,7 +43,14 @@ func ProcessUndelegate(s *state.State, undelegateDto *types.UnDelegateDto) (*sta
 		return s, nil
 	}
 
-	// @todo implement function withdraw reward process
+	s, err = ProcessWithdrawReward(s, &types.WithdrawalRewardDto{
+		ValidatorAddress: undelegateDto.ValidatorAddress,
+		DelegatorAddress: undelegateDto.DelegatorAddress,
+	})
+
+	if err != nil {
+		return nil, err
+	}
 
 	delegation := s.DelegationAtIndex(delegationIdx)
 	var undelegateAmount uint64 = 0

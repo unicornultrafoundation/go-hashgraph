@@ -28,6 +28,7 @@ func ProcessDelegates(s *state.State, delegates []*types.DelegateDto) (*state.St
 // Otherwise, it appends a new delegation to the state.
 // The function returns the updated state after processing the delegate.
 func ProcessDelegate(s *state.State, delegate *types.DelegateDto) (*state.State, error) {
+	var err error
 	validatorIdx, ok := s.ValidatorIndexByAddress(delegate.ValidatorAddress)
 	if !ok {
 		return s, nil
@@ -50,7 +51,14 @@ func ProcessDelegate(s *state.State, delegate *types.DelegateDto) (*state.State,
 			LastAccumulatedRewardPerToken: s.AccumulatedRewardByIndex(validatorIdx),
 		})
 	} else {
-		// @todo implement function withdraw reward process
+		s, err = ProcessWithdrawReward(s, &types.WithdrawalRewardDto{
+			ValidatorAddress: delegate.ValidatorAddress,
+			DelegatorAddress: delegate.DelegatorAddress,
+		})
+
+		if err != nil {
+			return nil, err
+		}
 
 		delegation := s.DelegationAtIndex(delegationIdx)
 		delegation.Amount = delegation.Amount + delegate.Amount
