@@ -15,3 +15,9 @@ type CreateValidatorDto struct {
 	Address common.Address // Ethereum address of the new validator.
 	Amount  uint64         // Amount of tokens being staked for validator creation.
 }
+
+// ExitValidatorDto is a data transfer object representing a request to initiate the exit process for a validator.
+// It contains the validator's address that is targeted for the exit process.
+type ExitValidatorDto struct {
+	Address common.Address // The address of the validator to be exited.
+}
