@@ -21,3 +21,8 @@ type CreateValidatorDto struct {
 type ExitValidatorDto struct {
 	Address common.Address // The address of the validator to be exited.
 }
+
+// SlashingDto represents a data transfer object (DTO) containing information about a slashing event.
+type SlashingDto struct {
+	ValidatorAddress common.Address // Address of the validator associated with the slashing event.
+}
