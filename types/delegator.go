@@ -29,7 +29,15 @@ type UnDelegateDto struct {
 	Amount           uint64         // Amount of tokens being undelegated.
 }
 
+// WithdrawalRewardDto represents a data transfer object for withdrawal rewards.
 type WithdrawalRewardDto struct {
-	ValidatorAddress common.Address
-	DelegatorAddress common.Address
+	ValidatorAddress common.Address // Address of the validator receiving the reward.
+	DelegatorAddress common.Address // Address of the delegator receiving the reward.
+}
+
+// StakeDto represents a data transfer object for staking tokens.
+type StakeDto struct {
+	ValidatorAddress common.Address // Address of the validator to stake tokens with.
+	DelegatorAddress common.Address // Address of the delegator staking tokens.
+	Amount           uint64         // Amount of tokens to be staked.
 }
