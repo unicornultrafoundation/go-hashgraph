@@ -27,6 +27,31 @@ func (s *State) AppendValidator(val *types.Validator) {
 	s.valMap[val.Address] = uint64(len(s.validators) - 1)
 }
 
+// ApplyToEveryValidator applies the given function to each validator in the state's validator list.
+// The provided function takes the index of the validator and the validator itself as arguments.
+// It returns a boolean indicating whether the validator was changed, the updated validator, and any encountered error.
+// The function locks the state before accessing the validators and releases the lock after updating them.
+func (s *State) ApplyToEveryValidator(f func(idx int, val *types.Validator) (bool, *types.Validator, error)) error {
+	s.lock.Lock()
+	v := s.validators
+	s.lock.Unlock()
+
+	for i, val := range v {
+		changed, newVal, err := f(i, val)
+		if err != nil {
+			return err
+		}
+		if changed {
+			v[i] = newVal
+		}
+	}
+
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	s.validators = v
+	return nil
+}
+
 // UpdateValidatorAtIndex updates the details of a validator at the specified index.
 // This function acquires a lock to ensure thread safety while modifying the validator list in the State.
 func (s *State) UpdateValidatorAtIndex(idx uint64, val *types.Validator) {
