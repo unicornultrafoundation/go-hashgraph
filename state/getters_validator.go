@@ -43,6 +43,22 @@ func (s *State) ValidatorAtIndex(idx uint64) *types.Validator {
 	return s.validators[idx]
 }
 
+// ReadFromEveryValidator iterates through each validator and applies a function to each.
+// The provided function 'f' should accept an index and a clone of the validator.
+// If 'f' returns an error, the iteration stops and the error is returned.
+func (s *State) ReadFromEveryValidator(f func(idx int, val *types.Validator) error) error {
+	s.lock.Lock()
+	validators := s.validators
+	s.lock.Unlock()
+
+	for i, v := range validators {
+		if err := f(i, v.Clone()); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // StakedBalances retrieves the staked balance information of delegators in the U2U network.
 // This function acquires a lock to ensure thread safety while accessing staked balance data.
 // It returns a slice of uint64 values representing staked balances of delegators.

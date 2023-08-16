@@ -1,14 +1,22 @@
 package types
 
-import "github.com/ethereum/go-ethereum/common"
+import (
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
+)
 
 // Validator defines a struct that represents the attributes and status of a validator in the network.
 type Validator struct {
-	Address                common.Address // Ethereum address of the validator.
-	Slashed                bool           // Indicates if the validator has been slashed for misconduct.
-	ActivationEpoch        uint64         // Epoch in which the validator became active.
-	ExitEpoch              uint64         // Epoch in which the validator intends to exit the network.
-	EffectiveStakedBalance uint64         // Effective staked balance of the validator.
+	Address                   common.Address // Ethereum address of the validator.
+	Slashed                   bool           // Indicates if the validator has been slashed for misconduct.
+	ActivationEpoch           idx.Epoch      // Epoch in which the validator became active.
+	ExitEpoch                 idx.Epoch      // Epoch in which the validator intends to exit the network.
+	EffectiveStakedBalance    uint64         // Effective staked balance of the validator.
+	AccumulatedRewardPerToken uint64
+	CommissionReward          uint64
+	LastBlockId               idx.Block
+	LastOnlineTime            uint64
+	Uptime                    uint64
 }
 
 // Clone creates a deep copy of the Validator object.
@@ -19,6 +27,9 @@ func (v *Validator) Clone() *Validator {
 		ActivationEpoch:        v.ActivationEpoch,
 		ExitEpoch:              v.ExitEpoch,
 		EffectiveStakedBalance: v.EffectiveStakedBalance,
+		LastBlockId:            v.LastBlockId,
+		LastOnlineTime:         v.LastOnlineTime,
+		Uptime:                 v.Uptime,
 	}
 }
 
@@ -37,4 +48,9 @@ type ExitValidatorDto struct {
 // SlashingDto represents a data transfer object (DTO) containing information about a slashing event.
 type SlashingDto struct {
 	ValidatorAddress common.Address // Address of the validator associated with the slashing event.
+}
+
+type ValidatorEpochMetric struct {
+	Missed idx.Block
+	Uptime uint64
 }

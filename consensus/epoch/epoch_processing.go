@@ -11,6 +11,11 @@ import (
 func ProcessFinalUpdates(s *state.State) (*state.State, error) {
 	var err error
 
+	s, err = ProcessEpochReward(s)
+	if err != nil {
+		return nil, err
+	}
+
 	s, err = ProcessEffectiveStakedBalances(s)
 	if err != nil {
 		return nil, err

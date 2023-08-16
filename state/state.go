@@ -10,7 +10,10 @@ import (
 
 // State defines a struct that encapsulates various utilities for managing the U2U Chain state.
 type State struct {
-	epoch              idx.Epoch                 // Current epoch information.
+	epoch              idx.Epoch // Current epoch information.
+	time               uint64
+	prevTime           uint64
+	latestBlock        *types.BlockCtx
 	validators         []*types.Validator        // List of active validators.
 	stakedBalances     []uint64                  // Staked balances of delegators.
 	accumulatedRewards []uint64                  // Accumulated rewards for validators.

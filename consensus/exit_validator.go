@@ -36,7 +36,7 @@ func ProcessExitValidator(s *state.State, exitValidatorDto *types.ExitValidatorD
 
 	delegatorIdx, _ := s.DelegatorIndexByAddress(exitValidatorDto.Address)
 	validator := s.ValidatorAtIndex(validatorIdx)
-	validator.ExitEpoch = uint64(s.Epoch()) + 1
+	validator.ExitEpoch = s.Epoch() + 1
 	s.UpdateValidatorAtIndex(validatorIdx, validator)
 
 	delegationIdx, _ := s.DelegationIndexByDelegator(delegatorIdx, validatorIdx)

@@ -5,6 +5,8 @@ import (
 	"github.com/unicornultrafoundation/go-hashgraph/consensus/election"
 	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
+	"github.com/unicornultrafoundation/go-hashgraph/state"
+	"github.com/unicornultrafoundation/go-hashgraph/types"
 )
 
 var (
@@ -185,4 +187,46 @@ func (p *Orderer) calcFrameIdx(e dag.Event, checkOnly bool) (selfParentFrame, fr
 		f = 1
 	}
 	return selfParentFrame, f
+}
+
+// ProcessFinalEvent processes the final events and updates the state's validators' information based on the events.
+// It takes the state s and a finalEventDto containing the final events and block information.
+// It iterates through the validators' events and updates their attributes accordingly.
+// The function also checks for missed blocks and calculates validator uptimes.
+// Finally, it sets the latest block in the state and returns the updated state after processing, along with any encountered error.
+func ProcessFinalEvent(s *state.State, finalEventDto *types.FinalEventDto) (*state.State, error) {
+	// @todo move to network rules
+	blockMissedSlack := idx.Block(50)
+	epochTime := s.Time()
+	validatorFunc := func(idx int, val *types.Validator) (bool, *types.Validator, error) {
+		e := finalEventDto.Events[idx]
+		if e == nil {
+			return false, val, nil
+		}
+
+		newVal := val.Clone()
+		newVal.LastOnlineTime = e.Time
+		newVal.LastBlockId = finalEventDto.Block.Id
+		if finalEventDto.Block.Id <= val.LastBlockId+blockMissedSlack {
+			prevOnline := maxNumber(epochTime, val.LastOnlineTime)
+			if prevOnline > e.Time {
+				newVal.Uptime += e.Time - prevOnline
+			}
+		}
+		return true, val, nil
+	}
+
+	if err := s.ApplyToEveryValidator(validatorFunc); err != nil {
+		return nil, err
+	}
+
+	s.SetLatestBlock(finalEventDto.Block)
+	return s, nil
+}
+
+func maxNumber(a uint64, b uint64) uint64 {
+	if a > b {
+		return a
+	}
+	return b
 }
