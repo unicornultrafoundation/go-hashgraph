@@ -1,6 +1,7 @@
 package state
 
 import (
+	"github.com/unicornultrafoundation/go-hashgraph/consensus/election"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 	ptypes "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/types"
 )
@@ -37,4 +38,24 @@ func (s *State) SetLatestBlock(b *ptypes.Block) {
 	defer s.lock.RUnlock()
 
 	s.latestBlock = b
+}
+
+// SetRoots sets the provided slice of election roots and slots in the U2U chain's state.
+// It acquires a read lock to ensure thread-safe access to the roots data, sets the roots,
+// and then releases the lock.
+func (s *State) SetRoots(roots []*election.RootAndSlot) {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+
+	s.roots = roots
+}
+
+// AppendRoot appends the provided election root and slot to the existing roots in the U2U chain's state.
+// It acquires a read lock to ensure thread-safe access to the roots data, appends the root,
+// and then releases the lock.
+func (s *State) AppendRoot(root *election.RootAndSlot) {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+
+	s.roots = append(s.roots, root)
 }

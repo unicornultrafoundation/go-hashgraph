@@ -17,4 +17,5 @@ message State {
     repeated u2u.types.Delegator delegators = 8;
     repeated u2u.types.Withdrawal withdrawals = 9;
     repeated u2u.types.WithdrawalReward withdrawalRewards = 10;
+    uint64 last_decided_frame  = 11;
 }
