@@ -21,3 +21,8 @@ type BlockCtx struct {
 	Time  uint64
 	Event hash.Event
 }
+
+type ConfirmedEvent struct {
+	Hash  hash.Event
+	Frame idx.Frame
+}

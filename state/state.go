@@ -5,10 +5,12 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/unicornultrafoundation/go-hashgraph/consensus/election"
+	"github.com/unicornultrafoundation/go-hashgraph/hash"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 	pState "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/state"
 	ptypes "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/types"
 	"github.com/unicornultrafoundation/go-hashgraph/state/stateutil"
+	"github.com/unicornultrafoundation/go-hashgraph/types"
 )
 
 // State defines a struct that encapsulates various utilities for managing the U2U Chain state.
@@ -25,11 +27,13 @@ type State struct {
 	delegations       []*ptypes.Delegation       // Delegation details.
 	delegators        []*ptypes.Delegator        // List of delegators.
 	roots             []*election.RootAndSlot
+	confirmedEvents   []*types.ConfirmedEvent
 
 	lock      sync.RWMutex              // Mutex for thread-safe access.
 	valMap    map[common.Address]uint64 // Map to store validator addresses and associated data.
 	delValMap map[string]uint64         // Nested map to store delegation and validator relationship.
 	delMap    map[common.Address]uint64 // Map to store delegator addresses and associated data.
+	ceMap     map[hash.Event]int
 }
 
 func FromProto(st *pState.State) *State {

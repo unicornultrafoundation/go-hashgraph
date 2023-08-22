@@ -2,8 +2,10 @@ package state
 
 import (
 	"github.com/unicornultrafoundation/go-hashgraph/consensus/election"
+	"github.com/unicornultrafoundation/go-hashgraph/hash"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 	ptypes "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/types"
+	"github.com/unicornultrafoundation/go-hashgraph/types"
 )
 
 // Epoch retrieves the epoch value of the current U2U chain state.
@@ -41,13 +43,28 @@ func (s *State) LatestBlock() *ptypes.Block {
 	return s.latestBlock
 }
 
-// GetRoots returns a slice of election roots and slots stored in the U2U chain's state.
+// Roots returns a slice of election roots and slots stored in the U2U chain's state.
 // It acquires a read lock to ensure thread-safe access to the roots data,
 // retrieves the roots from the state, and then releases the lock.
 // Returns the slice of election roots and slots.
-func (s *State) GetRoots() []*election.RootAndSlot {
+func (s *State) Roots() []*election.RootAndSlot {
 	s.lock.RLock()
 	defer s.lock.RUnlock()
 
 	return s.roots
+}
+
+// ConfirmedEventByHash retrieves a confirmed event by its hash from the state.
+// It acquires a read lock to ensure thread-safe access to the confirmed events map.
+// It looks up the index of the event hash in the map and if found, returns the corresponding confirmed event.
+// If the event hash is not present in the map, it returns nil.
+func (s *State) ConfirmedEventByHash(hash hash.Event) *types.ConfirmedEvent {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+
+	idx, ok := s.ceMap[hash]
+	if !ok {
+		return nil
+	}
+	return s.confirmedEvents[idx]
 }

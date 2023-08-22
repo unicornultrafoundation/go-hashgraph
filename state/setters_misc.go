@@ -4,6 +4,7 @@ import (
 	"github.com/unicornultrafoundation/go-hashgraph/consensus/election"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 	ptypes "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/types"
+	"github.com/unicornultrafoundation/go-hashgraph/types"
 )
 
 // SetEpoch updates the current epoch information in the U2U chain's state.
@@ -58,4 +59,33 @@ func (s *State) AppendRoot(root *election.RootAndSlot) {
 	defer s.lock.RUnlock()
 
 	s.roots = append(s.roots, root)
+}
+
+// SetConfirmedEvents sets the list of confirmed events in the state.
+// It acquires a read lock to ensure thread-safe access to the state and confirmed events map.
+// It updates the confirmed events slice and also updates the corresponding hash-to-index map.
+func (s *State) SetConfirmedEvents(confirmedEvents []*types.ConfirmedEvent) {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+
+	s.confirmedEvents = confirmedEvents
+	for idx, e := range confirmedEvents {
+		s.ceMap[e.Hash] = idx
+	}
+}
+
+// AppendConfirmedEvent appends a new confirmed event to the list of confirmed events in the state.
+// It acquires a read lock to ensure thread-safe access to the state and confirmed events map.
+// It checks if the event's hash already exists in the map, and if not, appends the event to the slice
+// and updates the hash-to-index map with the new event's index.
+func (s *State) AppendConfirmedEvent(confirmedEvent *types.ConfirmedEvent) {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+
+	_, has := s.ceMap[confirmedEvent.Hash]
+
+	if !has {
+		s.confirmedEvents = append(s.confirmedEvents, confirmedEvent)
+		s.ceMap[confirmedEvent.Hash] = len(s.confirmedEvents) - 1
+	}
 }
