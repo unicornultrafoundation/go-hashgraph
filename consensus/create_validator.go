@@ -1,6 +1,7 @@
 package consensus
 
 import (
+	ptypes "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/types"
 	"github.com/unicornultrafoundation/go-hashgraph/state"
 	"github.com/unicornultrafoundation/go-hashgraph/types"
 )
@@ -25,8 +26,8 @@ func ProcessCreateValidators(s *state.State, createValidatorDtos []*types.Create
 // Then, it invokes ProcessDelegate to perform the delegation using the provided CreateValidatorDto.
 // The function returns the updated state after processing the create validator action.
 func ProcessCreateValidator(s *state.State, createValidatorDto *types.CreateValidatorDto) (*state.State, error) {
-	s.AppendValidator(&types.Validator{
-		Address: createValidatorDto.Address,
+	s.AppendValidator(&ptypes.Validator{
+		Address: createValidatorDto.Address.Bytes(),
 		Slashed: false,
 	})
 

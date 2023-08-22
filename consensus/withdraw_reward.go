@@ -1,6 +1,7 @@
 package consensus
 
 import (
+	ptypes "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/types"
 	"github.com/unicornultrafoundation/go-hashgraph/state"
 	"github.com/unicornultrafoundation/go-hashgraph/types"
 )
@@ -47,14 +48,15 @@ func ProcessWithdrawReward(s *state.State, withdrawalRewardDto *types.Withdrawal
 	}
 
 	delegation := s.DelegationAtIndex(delegationIdx)
-	reward := (s.AccumulatedRewardByIndex(validatorIdx) - delegation.LastAccumulatedRewardPerToken) * delegation.Amount
+	val := s.ValidatorAtIndex(validatorIdx)
+	reward := (val.AccumulatedRewardPerToken - delegation.LastAccumulatedRewardPerToken) * delegation.Amount
 	if reward == 0 {
 		return s, nil
 	}
-	delegation.LastAccumulatedRewardPerToken = s.AccumulatedRewardByIndex(validatorIdx)
+	delegation.LastAccumulatedRewardPerToken = val.AccumulatedRewardPerToken
 	s.UpdateDelegationAtIndex(delegationIdx, delegation)
 
-	s.AppendWithdrawalReward(&types.WithdrawalReward{
+	s.AppendWithdrawalReward(&ptypes.WithdrawalReward{
 		DelegatorIndex: delegationIdx,
 		Amount:         reward,
 	})

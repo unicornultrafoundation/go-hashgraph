@@ -1,5 +1,4 @@
 # IDE
-.vscode
 .idea/
 
 # Go prof output

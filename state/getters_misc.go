@@ -2,7 +2,7 @@ package state
 
 import (
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
-	"github.com/unicornultrafoundation/go-hashgraph/types"
+	ptypes "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/types"
 )
 
 // Epoch retrieves the epoch value of the current U2U chain state.
@@ -33,7 +33,7 @@ func (s *State) PrevTime() uint64 {
 }
 
 // LatestBlock returns the latest block context in the state.
-func (s *State) LatestBlock() *types.BlockCtx {
+func (s *State) LatestBlock() *ptypes.Block {
 	s.lock.RLock()
 	defer s.lock.RUnlock()
 

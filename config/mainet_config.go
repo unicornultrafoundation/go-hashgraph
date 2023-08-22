@@ -1,7 +1,7 @@
 package config
 
 var mainnetConfig = &U2UChainConfig{
-	MinStakeAmount:                  1 * 1e9,
-	BaseRewardFactor:                64,
-	EffectiveStakedBalanceIncrement: 1e9,
+	MinStakeAmount:     1 * 1e9,
+	BalanceIncrement:   1e9,
+	CommissionQuotient: 50,
 }

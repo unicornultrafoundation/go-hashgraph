@@ -2,19 +2,6 @@ package types
 
 import "github.com/ethereum/go-ethereum/common"
 
-// Delegation represents the information about a delegation made by a delegator to a validator.
-type Delegation struct {
-	ValidatorIndex                uint64 // Index of the validator being delegated to.
-	DelegatorIndex                uint64 // Index of the delegator making the delegation.
-	Amount                        uint64 // Amount of tokens being delegated.
-	LastAccumulatedRewardPerToken uint64 // Last accumulated reward per token for the delegation.
-}
-
-// Delegator represents an individual who participates in delegating tokens to validators.
-type Delegator struct {
-	Address common.Address // Ethereum address of the delegator.
-}
-
 // DelegateDto is a data transfer object (DTO) that holds information about a delegation action.
 type DelegateDto struct {
 	ValidatorAddress common.Address // Ethereum address of the validator being delegated to.

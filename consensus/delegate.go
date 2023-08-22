@@ -1,6 +1,7 @@
 package consensus
 
 import (
+	ptypes "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/types"
 	"github.com/unicornultrafoundation/go-hashgraph/state"
 	"github.com/unicornultrafoundation/go-hashgraph/types"
 )
@@ -36,19 +37,21 @@ func ProcessDelegate(s *state.State, delegate *types.DelegateDto) (*state.State,
 
 	delegatorIdx, ok := s.DelegatorIndexByAddress(delegate.DelegatorAddress)
 	if !ok {
-		s.AppendDelegator(&types.Delegator{Address: delegate.DelegatorAddress})
+		s.AppendDelegator(&ptypes.Delegator{Address: delegate.DelegatorAddress[:]})
 	} else {
 		delegatorIdx, _ = s.DelegatorIndexByAddress(delegate.DelegatorAddress)
 	}
 
 	delegationIdx, ok := s.DelegationIndexByDelegator(delegatorIdx, validatorIdx)
 
+	lastAccumulatedRewardPerToken := s.ValidatorAtIndex(validatorIdx).AccumulatedRewardPerToken
+
 	if !ok {
-		s.AppendDelegation(&types.Delegation{
+		s.AppendDelegation(&ptypes.Delegation{
 			ValidatorIndex:                validatorIdx,
 			DelegatorIndex:                delegatorIdx,
 			Amount:                        delegate.Amount,
-			LastAccumulatedRewardPerToken: s.AccumulatedRewardByIndex(validatorIdx),
+			LastAccumulatedRewardPerToken: lastAccumulatedRewardPerToken,
 		})
 	} else {
 		s, err = ProcessWithdrawReward(s, &types.WithdrawalRewardDto{
@@ -62,7 +65,7 @@ func ProcessDelegate(s *state.State, delegate *types.DelegateDto) (*state.State,
 
 		delegation := s.DelegationAtIndex(delegationIdx)
 		delegation.Amount = delegation.Amount + delegate.Amount
-		delegation.LastAccumulatedRewardPerToken = s.AccumulatedRewardByIndex(validatorIdx)
+		delegation.LastAccumulatedRewardPerToken = lastAccumulatedRewardPerToken
 		s.UpdateDelegationAtIndex(delegationIdx, delegation)
 	}
 

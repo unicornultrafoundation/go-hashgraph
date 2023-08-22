@@ -1,6 +1,7 @@
 package consensus
 
 import (
+	ptypes "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/types"
 	"github.com/unicornultrafoundation/go-hashgraph/state"
 	"github.com/unicornultrafoundation/go-hashgraph/types"
 )
@@ -64,11 +65,11 @@ func ProcessUndelegate(s *state.State, undelegateDto *types.UnDelegateDto) (*sta
 
 	s.UpdateDelegationAtIndex(delegationIdx, delegation)
 
-	s.AppendWithdrawal(&types.Withdrawal{
+	s.AppendWithdrawal(&ptypes.Withdrawal{
 		ValidatorIndex: validatorIdx,
 		DelegatorIndex: delegatorIdx,
 		Amount:         undelegateAmount,
-		Epoch:          s.Epoch(),
+		Epoch:          uint64(s.Epoch()),
 	})
 
 	s.UpdateStakedBalanceAtIndex(validatorIdx, s.StakedBalanceAtIndex(validatorIdx)-undelegateAmount)

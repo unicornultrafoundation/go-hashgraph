@@ -5,6 +5,7 @@ import (
 	"github.com/unicornultrafoundation/go-hashgraph/consensus/election"
 	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
+	ptypes "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/types"
 	"github.com/unicornultrafoundation/go-hashgraph/state"
 	"github.com/unicornultrafoundation/go-hashgraph/types"
 )
@@ -196,18 +197,18 @@ func (p *Orderer) calcFrameIdx(e dag.Event, checkOnly bool) (selfParentFrame, fr
 // Finally, it sets the latest block in the state and returns the updated state after processing, along with any encountered error.
 func ProcessFinalEvent(s *state.State, finalEventDto *types.FinalEventDto) (*state.State, error) {
 	// @todo move to network rules
-	blockMissedSlack := idx.Block(50)
+	blockMissedSlack := uint64(50)
 	epochTime := s.Time()
-	validatorFunc := func(idx int, val *types.Validator) (bool, *types.Validator, error) {
+	validatorFunc := func(idx int, val *ptypes.Validator) (bool, *ptypes.Validator, error) {
 		e := finalEventDto.Events[idx]
 		if e == nil {
 			return false, val, nil
 		}
 
-		newVal := val.Clone()
+		newVal := val
 		newVal.LastOnlineTime = e.Time
-		newVal.LastBlockId = finalEventDto.Block.Id
-		if finalEventDto.Block.Id <= val.LastBlockId+blockMissedSlack {
+		newVal.LastBlockId = uint64(finalEventDto.Block.Id)
+		if uint64(finalEventDto.Block.Id) <= val.LastBlockId+blockMissedSlack {
 			prevOnline := maxNumber(epochTime, val.LastOnlineTime)
 			if prevOnline > e.Time {
 				newVal.Uptime += e.Time - prevOnline
@@ -221,6 +222,18 @@ func ProcessFinalEvent(s *state.State, finalEventDto *types.FinalEventDto) (*sta
 	}
 
 	s.SetLatestBlock(finalEventDto.Block)
+	return s, nil
+}
+
+// ProcessTxFee updates the transaction fee for a specific validator in the U2U chain's state.
+// It takes the state s, the index of the validator (validatorIdx), and the transaction fee amount (txfee).
+// It retrieves the validator using ValidatorAtIndex, adds the txfee to the validator's TxFees attribute,
+// and updates the state using UpdateValidatorAtIndex.
+// Returns the updated state after processing the transaction fee update and any encountered error.
+func ProcessTxFee(s *state.State, validatorIdx uint64, txfee uint64) (*state.State, error) {
+	val := s.ValidatorAtIndex(validatorIdx)
+	val.TxFees += txfee
+	s.UpdateValidatorAtIndex(validatorIdx, val)
 	return s, nil
 }
 

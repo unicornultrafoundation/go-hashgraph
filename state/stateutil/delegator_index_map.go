@@ -2,14 +2,14 @@ package stateutil
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/unicornultrafoundation/go-hashgraph/types"
+	ptypes "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/types"
 )
 
 // DelegatorIndexMap constructs a map that associates delegator addresses with their corresponding indices.
 // This function takes a slice of Delegator pointers as input and returns a map of common.Address to uint64.
 // If the input slice is empty, an empty map is returned.
 // The map is intended to help quickly locate the index of a delegator in a list.
-func DelegatorIndexMap(dels []*types.Delegator) map[common.Address]uint64 {
+func DelegatorIndexMap(dels []*ptypes.Delegator) map[common.Address]uint64 {
 	m := make(map[common.Address]uint64, len(dels))
 	if len(dels) == 0 {
 		return m
@@ -18,7 +18,7 @@ func DelegatorIndexMap(dels []*types.Delegator) map[common.Address]uint64 {
 		if record == nil {
 			continue
 		}
-		m[record.Address] = uint64(idx)
+		m[common.BytesToAddress(record.Address)] = uint64(idx)
 	}
 	return m
 }

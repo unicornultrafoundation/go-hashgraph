@@ -1,0 +1,20 @@
+syntax = "proto3";
+package u2u.state;
+
+option go_package = "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/state";
+
+
+import "u2u/types/types.proto";
+
+message State {
+    uint64 epoch = 1;
+    uint64 time = 2;
+    uint64 prev_time = 3;
+    u2u.types.Block last_block = 4;
+    repeated u2u.types.Validator validators = 5;
+    repeated uint64 staked_balances = 6;
+    repeated u2u.types.Delegation delegations = 7;
+    repeated u2u.types.Delegator delegators = 8;
+    repeated u2u.types.Withdrawal withdrawals = 9;
+    repeated u2u.types.WithdrawalReward withdrawalRewards = 10;
+}

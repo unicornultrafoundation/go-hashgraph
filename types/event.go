@@ -3,10 +3,11 @@ package types
 import (
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
+	ptypes "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/types"
 )
 
 type FinalEventDto struct {
-	Block  *BlockCtx
+	Block  *ptypes.Block
 	Events []*EventInfoDto
 }
 
