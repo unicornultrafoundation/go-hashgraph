@@ -89,7 +89,7 @@ func testConsensusRandomAndReset(t *testing.T, weights []pos.Weight, mutateWeigh
 	for _, _lch := range lchs {
 		lch := _lch // capture
 		lch.applyBlock = func(block *types.Block) *pos.Validators {
-			if lch.store.GetLastDecidedFrame()+1 == idx.Frame(maxEpochBlocks) {
+			if lch.state.LastDecidedFrame()+1 == idx.Frame(maxEpochBlocks) {
 				// seal epoch
 				if mutateWeights {
 					return mutateValidators(lch.store.GetValidators())
@@ -180,8 +180,8 @@ func compareResults(t *testing.T, lchs []*TestConsensus) {
 		for j := i + 1; j < len(lchs); j++ {
 			lch1 := lchs[j]
 
-			assertar.Equal(*(lchs[j].store.GetLastDecidedState()), *(lchs[i].store.GetLastDecidedState()))
-			assertar.Equal(*(lchs[j].store.GetEpochState()), *(lchs[i].store.GetEpochState()))
+			assertar.Equal(lchs[j].state.LastDecidedFrame(), lchs[i].state.LastDecidedFrame())
+			assertar.Equal(lchs[j].state, lchs[i].state)
 
 			for e := idx.Epoch(1); e <= lch0.store.GetEpoch(); e++ {
 				both := lch0.epochBlocks[e]

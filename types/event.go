@@ -26,3 +26,13 @@ type ConfirmedEvent struct {
 	Hash  hash.Event
 	Frame idx.Frame
 }
+
+type Slot struct {
+	Frame     idx.Frame
+	Validator idx.ValidatorID
+}
+
+type RootAndSlot struct {
+	Hash hash.Event
+	Slot Slot
+}

@@ -4,7 +4,6 @@ import (
 	"sync"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/unicornultrafoundation/go-hashgraph/consensus/election"
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 	pState "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/state"
@@ -26,7 +25,7 @@ type State struct {
 	withdrawalRewards []*ptypes.WithdrawalReward // Withdrawal rewards associated with delegator withdrawals.
 	delegations       []*ptypes.Delegation       // Delegation details.
 	delegators        []*ptypes.Delegator        // List of delegators.
-	roots             []*election.RootAndSlot
+	roots             []*types.RootAndSlot
 	confirmedEvents   []*types.ConfirmedEvent
 
 	lock      sync.RWMutex              // Mutex for thread-safe access.

@@ -94,7 +94,7 @@ func testRestartAndReset(t *testing.T, weights []pos.Weight, mutateWeights bool,
 	for _, _lch := range lchs {
 		lch := _lch // capture
 		lch.applyBlock = func(block *types.Block) *pos.Validators {
-			if lch.store.GetLastDecidedFrame()+1 == idx.Frame(maxEpochBlocks) {
+			if lch.state.LastDecidedFrame()+1 == idx.Frame(maxEpochBlocks) {
 				// seal epoch
 				if mutateWeights {
 					return mutateValidators(lch.store.GetValidators())
@@ -210,7 +210,7 @@ func testRestartAndReset(t *testing.T, weights []pos.Weight, mutateWeights bool,
 
 func compareStates(assertar *assert.Assertions, expected, restored *TestConsensus) {
 	assertar.Equal(
-		*(expected.store.GetLastDecidedState()), *(restored.store.GetLastDecidedState()))
+		expected.state.LastDecidedFrame(), restored.state.LastDecidedFrame())
 	assertar.Equal(
 		expected.store.GetEpochState().String(), restored.store.GetEpochState().String())
 	// check last block

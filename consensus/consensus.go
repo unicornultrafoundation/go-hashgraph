@@ -2,6 +2,7 @@ package consensus
 
 import (
 	"github.com/unicornultrafoundation/go-hashgraph/consensus/dagidx"
+	"github.com/unicornultrafoundation/go-hashgraph/consensus/kv"
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
 	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
@@ -28,7 +29,7 @@ type Consensus struct {
 }
 
 // NewConsensus creates Consensus instance.
-func NewConsensus(store *Store, input EventSource, dagIndex DagIndex, crit func(error), config Config) *Consensus {
+func NewConsensus(store *kv.Store, input EventSource, dagIndex DagIndex, crit func(error), config Config) *Consensus {
 	p := &Consensus{
 		Orderer:  NewOrderer(store, input, dagIndex, crit, config),
 		dagIndex: dagIndex,
@@ -39,12 +40,15 @@ func NewConsensus(store *Store, input EventSource, dagIndex DagIndex, crit func(
 
 func (p *Consensus) confirmEvents(frame idx.Frame, event hash.Event, onEventConfirmed func(dag.Event)) error {
 	err := p.dfsSubgraph(event, func(e dag.Event) bool {
-		decidedFrame := p.store.GetEventConfirmedOn(e.ID())
-		if decidedFrame != 0 {
+		confirmedEvent := p.state.ConfirmedEventByHash(e.ID())
+		if confirmedEvent == nil {
 			return false
 		}
 		// mark all the walked events as confirmed
-		p.store.SetEventConfirmedOn(e.ID(), frame)
+		p.state.AppendConfirmedEvent(&types.ConfirmedEvent{
+			Hash:  e.ID(),
+			Frame: frame,
+		})
 		if onEventConfirmed != nil {
 			onEventConfirmed(e)
 		}
@@ -56,12 +60,12 @@ func (p *Consensus) confirmEvents(frame idx.Frame, event hash.Event, onEventConf
 func (p *Consensus) applyEvent(decidedFrame idx.Frame, event hash.Event) *pos.Validators {
 	eventVecClock := p.dagIndex.GetMergedHighestBefore(event)
 
-	validators := p.store.GetValidators()
+	validators := p.state.Validators()
 	// cheaters are ordered deterministically
-	cheaters := make([]idx.ValidatorID, 0, validators.Len())
-	for creatorIdx, creator := range validators.SortedIDs() {
-		if eventVecClock.Get(idx.Validator(creatorIdx)).IsForkDetected() {
-			cheaters = append(cheaters, creator)
+	cheaters := make([]idx.ValidatorID, 0, len(validators))
+	for valIdx, _ := range validators {
+		if eventVecClock.Get(idx.Validator(valIdx)).IsForkDetected() {
+			cheaters = append(cheaters, idx.ValidatorID(valIdx))
 		}
 	}
 

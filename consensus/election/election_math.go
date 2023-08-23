@@ -6,21 +6,24 @@ import (
 
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
+	"github.com/unicornultrafoundation/go-hashgraph/types"
 )
 
 // ProcessRoot calculates Event votes only for the new root.
 // If this root observes that the current election is decided, then return decided Event
-func (el *Election) ProcessRoot(newRoot RootAndSlot) (*Res, error) {
+func (el *Election) ProcessRoot(newRoot types.RootAndSlot) (*Res, error) {
+	frameToDecide := el.state.LastDecidedFrame() + 1
+
 	res, err := el.chooseEvent()
 	if err != nil || res != nil {
 		return res, err
 	}
 
-	if newRoot.Slot.Frame <= el.frameToDecide {
+	if newRoot.Slot.Frame <= frameToDecide {
 		// too old root, out of interest for current election
 		return nil, nil
 	}
-	round := newRoot.Slot.Frame - el.frameToDecide
+	round := newRoot.Slot.Frame - frameToDecide
 	if round == 0 {
 		// unreachable because of condition above
 		return nil, nil
@@ -28,12 +31,12 @@ func (el *Election) ProcessRoot(newRoot RootAndSlot) (*Res, error) {
 
 	notDecidedRoots := el.notDecidedRoots()
 
-	var observedRoots []RootAndSlot
-	var observedRootsMap map[idx.ValidatorID]RootAndSlot
+	var observedRoots []types.RootAndSlot
+	var observedRootsMap map[idx.ValidatorID]types.RootAndSlot
 	if round == 1 {
-		observedRootsMap = el.observedRootsMap(newRoot.ID, newRoot.Slot.Frame-1)
+		observedRootsMap = el.observedRootsMap(newRoot.Hash, newRoot.Slot.Frame-1)
 	} else {
-		observedRoots = el.observedRoots(newRoot.ID, newRoot.Slot.Frame-1)
+		observedRoots = el.observedRoots(newRoot.Hash, newRoot.Slot.Frame-1)
 	}
 
 	for _, validatorSubject := range notDecidedRoots {
@@ -45,7 +48,7 @@ func (el *Election) ProcessRoot(newRoot RootAndSlot) (*Res, error) {
 			vote.yes = ok
 			vote.decided = false
 			if ok {
-				vote.observedRoot = observedRoot.ID
+				vote.observedRoot = observedRoot.Hash
 			}
 		} else {
 			var (
@@ -65,7 +68,7 @@ func (el *Election) ProcessRoot(newRoot RootAndSlot) (*Res, error) {
 				if vote, ok := el.votes[vid]; ok {
 					if vote.yes && subjectHash != nil && *subjectHash != vote.observedRoot {
 						return nil, fmt.Errorf("forkless caused by 2 fork roots => more than 1/3W are Byzantine (%s != %s, election frame=%d, validator=%d)",
-							subjectHash.String(), vote.observedRoot.String(), el.frameToDecide, validatorSubject)
+							subjectHash.String(), vote.observedRoot.String(), frameToDecide, validatorSubject)
 					}
 
 					if vote.yes {
@@ -77,7 +80,7 @@ func (el *Election) ProcessRoot(newRoot RootAndSlot) (*Res, error) {
 					if !allVotes.Count(observedRoot.Slot.Validator) {
 						// it shouldn't be possible to get here, because we've taken 1 root from every node above
 						return nil, fmt.Errorf("forkless caused by 2 fork roots => more than 1/3W are Byzantine (election frame=%d, validator=%d)",
-							el.frameToDecide, validatorSubject)
+							frameToDecide, validatorSubject)
 					}
 				} else {
 					return nil, errors.New("every root must vote for every not decided subject. possibly roots are processed out of order")

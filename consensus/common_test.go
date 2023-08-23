@@ -13,7 +13,7 @@ import (
 	"github.com/unicornultrafoundation/go-hashgraph/vecfc"
 )
 
-type applyBlockFn func(block *types.Block) *pos.Validators
+type applyBlockFn func(block *types.Block)
 
 type BlockKey struct {
 	Epoch idx.Epoch
@@ -81,8 +81,8 @@ func FakeConsensus(nodes []idx.ValidatorID, weights []pos.Weight, mods ...memory
 				EndBlock: func() (sealEpoch *pos.Validators) {
 					// track blocks
 					key := BlockKey{
-						Epoch: extended.store.GetEpoch(),
-						Frame: extended.store.GetLastDecidedFrame() + 1,
+						Epoch: extended.state.Epoch(),
+						Frame: extended.state.LastDecidedFrame() + 1,
 					}
 					extended.blocks[key] = &BlockResult{
 						Event:      block.Event,

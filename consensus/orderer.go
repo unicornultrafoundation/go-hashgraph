@@ -3,9 +3,11 @@ package consensus
 import (
 	"github.com/unicornultrafoundation/go-hashgraph/consensus/dagidx"
 	"github.com/unicornultrafoundation/go-hashgraph/consensus/election"
+	"github.com/unicornultrafoundation/go-hashgraph/consensus/kv"
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 	"github.com/unicornultrafoundation/go-hashgraph/native/pos"
+	"github.com/unicornultrafoundation/go-hashgraph/state"
 )
 
 type OrdererCallbacks struct {
@@ -23,7 +25,8 @@ type OrdererDagIndex interface {
 type Orderer struct {
 	config Config
 	crit   func(error)
-	store  *Store
+	store  *kv.Store
+	state  *state.State
 	input  EventSource
 
 	election *election.Election
@@ -35,7 +38,7 @@ type Orderer struct {
 // NewOrderer creates Orderer instance.
 // Unlike Hashgraph, Orderer doesn't updates DAG indexes for events, and doesn't detect cheaters
 // It has only one purpose - reaching consensus on events order.
-func NewOrderer(store *Store, input EventSource, dagIndex OrdererDagIndex, crit func(error), config Config) *Orderer {
+func NewOrderer(store *kv.Store, input EventSource, dagIndex OrdererDagIndex, crit func(error), config Config) *Orderer {
 	p := &Orderer{
 		config:   config,
 		store:    store,

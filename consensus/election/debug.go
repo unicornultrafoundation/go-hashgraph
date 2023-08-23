@@ -4,7 +4,9 @@ import (
 	"crypto/sha256"
 	"fmt"
 
+	"github.com/unicornultrafoundation/go-hashgraph/consensus/helpers"
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
+	"github.com/unicornultrafoundation/go-hashgraph/types"
 )
 
 // DebugStateHash may be used in tests to match election state
@@ -17,7 +19,7 @@ func (el *Election) DebugStateHash() hash.Hash {
 	}
 
 	for vid, vote := range el.votes {
-		write(vid.fromRoot.ID.Bytes())
+		write(vid.fromRoot.Hash[:])
 		write(vid.fromRoot.Slot.Frame.Bytes())
 		write(vid.fromRoot.Slot.Validator.Bytes())
 		write(vote.observedRoot.Bytes())
@@ -31,9 +33,9 @@ func (el *Election) DebugStateHash() hash.Hash {
 
 // @param (optional) voters is roots to print votes for. May be nil
 // @return election summary in a human readable format
-func (el *Election) String(voters []RootAndSlot) string {
+func (el *Election) String(voters []types.RootAndSlot) string {
 	if voters == nil {
-		votersM := make(map[RootAndSlot]bool)
+		votersM := make(map[types.RootAndSlot]bool)
 		for vid := range el.votes {
 			votersM[vid.fromRoot] = true
 		}
@@ -41,11 +43,11 @@ func (el *Election) String(voters []RootAndSlot) string {
 			voters = append(voters, voter)
 		}
 	}
-
+	activeIndices, _ := helpers.ActiveValidatorIndices(el.state, el.state.Epoch())
 	info := "Every line contains votes from a root, for each subject. y is yes, n is no. Upper case means 'decided'. '-' means that subject was already decided when root was processed.\n"
 	for _, root := range voters { // voter
-		info += fmt.Sprintf("%s-%d: ", root.ID.String(), root.Slot.Frame)
-		for _, forV := range el.validators.IDs() { // subject
+		info += fmt.Sprintf("%s-%d: ", root.Hash.String(), root.Slot.Frame)
+		for _, forV := range activeIndices { // subject
 			vid := voteID{
 				fromRoot:     root,
 				forValidator: forV,

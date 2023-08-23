@@ -5,6 +5,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/unicornultrafoundation/go-hashgraph/consensus/dagidx"
+	"github.com/unicornultrafoundation/go-hashgraph/consensus/kv"
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
 	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
@@ -37,7 +38,7 @@ type DagIndexer interface {
 }
 
 // New creates Indexed instance.
-func NewIndexed(store *Store, input EventSource, dagIndexer DagIndexer, crit func(error), config Config) *Indexed {
+func NewIndexed(store *kv.Store, input EventSource, dagIndexer DagIndexer, crit func(error), config Config) *Indexed {
 	p := &Indexed{
 		Consensus:     NewConsensus(store, input, dagIndexer, crit, config),
 		dagIndexer:    dagIndexer,
@@ -85,10 +86,7 @@ func (p *Indexed) Bootstrap(callback types.ConsensusCallbacks) error {
 	ordererCallbacks := OrdererCallbacks{
 		ApplyEvent: base.ApplyEvent,
 		EpochDBLoaded: func(epoch idx.Epoch) {
-			if base.EpochDBLoaded != nil {
-				base.EpochDBLoaded(epoch)
-			}
-			p.dagIndexer.Reset(p.store.GetValidators(), p.store.epochTable.VectorIndex, p.input.GetEvent)
+
 		},
 	}
 	return p.Consensus.BootstrapWithOrderer(callback, ordererCallbacks)

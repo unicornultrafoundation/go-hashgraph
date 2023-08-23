@@ -1,18 +1,17 @@
 package election
 
 import (
+	"github.com/unicornultrafoundation/go-hashgraph/consensus/helpers"
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
-	"github.com/unicornultrafoundation/go-hashgraph/native/pos"
+	"github.com/unicornultrafoundation/go-hashgraph/state"
+	"github.com/unicornultrafoundation/go-hashgraph/types"
 )
 
 type (
 	// Election is cached data of election algorithm.
 	Election struct {
-		// election params
-		frameToDecide idx.Frame
-
-		validators *pos.Validators
+		state *state.State
 
 		// election state
 		decidedRoots map[idx.ValidatorID]voteValue // decided roots at "frameToDecide"
@@ -26,24 +25,11 @@ type (
 	// ForklessCauseFn returns true if event A is forkless caused by event B
 	ForklessCauseFn func(a hash.Event, b hash.Event) bool
 	// GetFrameRootsFn returns all the roots in the specified frame
-	GetFrameRootsFn func(f idx.Frame) []RootAndSlot
-
-	// Slot specifies a root slot {addr, frame}. Normal validators can have only one root with this pair.
-	// Due to a fork, different roots may occupy the same slot
-	Slot struct {
-		Frame     idx.Frame
-		Validator idx.ValidatorID
-	}
-
-	// RootAndSlot specifies concrete root of slot.
-	RootAndSlot struct {
-		ID   hash.Event
-		Slot Slot
-	}
+	GetFrameRootsFn func(f idx.Frame) []types.RootAndSlot
 )
 
 type voteID struct {
-	fromRoot     RootAndSlot
+	fromRoot     types.RootAndSlot
 	forValidator idx.ValidatorID
 }
 type voteValue struct {
@@ -60,63 +46,54 @@ type Res struct {
 
 // New election context
 func New(
-	validators *pos.Validators,
-	frameToDecide idx.Frame,
+	st *state.State,
 	forklessCauseFn ForklessCauseFn,
-	getFrameRoots GetFrameRootsFn,
 ) *Election {
 	el := &Election{
-		observe:       forklessCauseFn,
-		getFrameRoots: getFrameRoots,
+		state:   st,
+		observe: forklessCauseFn,
 	}
-
-	el.Reset(validators, frameToDecide)
-
 	return el
-}
-
-// Reset erases the current election state, prepare for new election frame
-func (el *Election) Reset(validators *pos.Validators, frameToDecide idx.Frame) {
-	el.validators = validators
-	el.frameToDecide = frameToDecide
-	el.votes = make(map[voteID]voteValue)
-	el.decidedRoots = make(map[idx.ValidatorID]voteValue)
 }
 
 // return root slots which are not within el.decidedRoots
 func (el *Election) notDecidedRoots() []idx.ValidatorID {
-	notDecidedRoots := make([]idx.ValidatorID, 0, el.validators.Len())
+	activeIndices, _ := helpers.ActiveValidatorIndices(el.state, el.state.Epoch())
+	valCount := len(activeIndices)
+	notDecidedRoots := make([]idx.ValidatorID, 0, valCount)
 
-	for _, validator := range el.validators.IDs() {
+	for _, validator := range activeIndices {
 		if _, ok := el.decidedRoots[validator]; !ok {
 			notDecidedRoots = append(notDecidedRoots, validator)
 		}
 	}
-	if idx.Validator(len(notDecidedRoots)+len(el.decidedRoots)) != el.validators.Len() { // sanity check
+	if len(notDecidedRoots)+len(el.decidedRoots) != valCount { // sanity check
 		panic("Mismatch of roots")
 	}
 	return notDecidedRoots
 }
 
 // observedRoots returns all the roots at the specified frame which do forkless cause the specified root.
-func (el *Election) observedRoots(root hash.Event, frame idx.Frame) []RootAndSlot {
-	observedRoots := make([]RootAndSlot, 0, el.validators.Len())
+func (el *Election) observedRoots(root hash.Event, frame idx.Frame) []types.RootAndSlot {
+	valCount, _ := helpers.ActiveValidatorCount(el.state, el.state.Epoch())
+	observedRoots := make([]types.RootAndSlot, 0, valCount)
 
 	frameRoots := el.getFrameRoots(frame)
 	for _, frameRoot := range frameRoots {
-		if el.observe(root, frameRoot.ID) {
+		if el.observe(root, frameRoot.Hash) {
 			observedRoots = append(observedRoots, frameRoot)
 		}
 	}
 	return observedRoots
 }
 
-func (el *Election) observedRootsMap(root hash.Event, frame idx.Frame) map[idx.ValidatorID]RootAndSlot {
-	observedRootsMap := make(map[idx.ValidatorID]RootAndSlot, el.validators.Len())
+func (el *Election) observedRootsMap(root hash.Event, frame idx.Frame) map[idx.ValidatorID]types.RootAndSlot {
+	valCount, _ := helpers.ActiveValidatorCount(el.state, el.state.Epoch())
+	observedRootsMap := make(map[idx.ValidatorID]types.RootAndSlot, valCount)
 
 	frameRoots := el.getFrameRoots(frame)
 	for _, frameRoot := range frameRoots {
-		if el.observe(root, frameRoot.ID) {
+		if el.observe(root, frameRoot.Hash) {
 			observedRootsMap[frameRoot.Slot.Validator] = frameRoot
 		}
 	}

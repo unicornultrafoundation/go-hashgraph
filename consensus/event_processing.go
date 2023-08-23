@@ -3,6 +3,7 @@ package consensus
 import (
 	"github.com/pkg/errors"
 	"github.com/unicornultrafoundation/go-hashgraph/consensus/election"
+	"github.com/unicornultrafoundation/go-hashgraph/consensus/helpers"
 	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 	ptypes "github.com/unicornultrafoundation/go-hashgraph/proto/u2u/types"
@@ -126,10 +127,10 @@ func (p *Orderer) bootstrapElection() (bool, error) {
 // This routine should be called after node startup, and after each decided frame.
 func (p *Orderer) processKnownRoots() (*election.Res, error) {
 	// iterate all the roots from LastDecidedFrame+1 to highest, call processRoot for each
-	lastDecidedFrame := p.store.GetLastDecidedFrame()
+	lastDecidedFrame := p.state.LastDecidedFrame()
 	var decided *election.Res
 	for f := lastDecidedFrame + 1; ; f++ {
-		frameRoots := p.store.GetFrameRoots(f)
+		frameRoots := helpers.FrameRoots(p.state, f)
 		for _, it := range frameRoots {
 			var err error
 			decided, err = p.election.ProcessRoot(it)
@@ -150,8 +151,9 @@ func (p *Orderer) processKnownRoots() (*election.Res, error) {
 // forklessCausedByQuorumOn returns true if event is forkless caused by 2/3W roots on specified frame
 func (p *Orderer) forklessCausedByQuorumOn(e dag.Event, f idx.Frame) bool {
 	observedCounter := p.store.GetValidators().NewCounter()
+	frameRoots := helpers.FrameRoots(p.state, f)
 	// check "observing" prev roots only if called by creator, or if creator has marked that event as root
-	for _, it := range p.store.GetFrameRoots(f) {
+	for _, it := range frameRoots {
 		if p.dagIndex.ForklessCause(e.ID(), it.ID) {
 			observedCounter.Count(it.Slot.Validator)
 		}

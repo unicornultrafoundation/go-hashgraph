@@ -65,7 +65,7 @@ func testConfirmBlocks(t *testing.T, weights []pos.Weight, cheatersCount int) {
 		blocks []*types.Block
 	)
 	lch.applyBlock = func(block *types.Block) *pos.Validators {
-		frames = append(frames, lch.store.GetLastDecidedFrame()+1)
+		frames = append(frames, lch.state.LastDecidedFrame()+1)
 		blocks = append(blocks, block)
 
 		return nil
