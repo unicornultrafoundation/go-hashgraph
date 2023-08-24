@@ -31,7 +31,7 @@ func (es EpochState) String() string {
 	return fmt.Sprintf("%d/%s", es.Epoch, es.Validators.String())
 }
 
-// Bootstrap restores consensus's state from store.
+// Bootstrap restores abft's state from store.
 func (p *Orderer) Bootstrap(callback OrdererCallbacks) error {
 	if p.election != nil {
 		return errors.New("already bootstrapped")

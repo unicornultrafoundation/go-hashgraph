@@ -22,9 +22,8 @@ type DagIndex interface {
 // Use this structure if need a general-purpose consensus. Instead, use lower-level consensus.Orderer.
 type Consensus struct {
 	*Orderer
-	dagIndex      DagIndex
-	uniqueDirtyID uniqueID
-	callback      types.ConsensusCallbacks
+	dagIndex DagIndex
+	callback types.ConsensusCallbacks
 }
 
 // NewConsensus creates Consensus instance.

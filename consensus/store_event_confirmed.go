@@ -1,8 +1,8 @@
 package consensus
 
 import (
-	"github.com/unicornultrafoundation/go-hashgraph/hash"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
+	"github.com/unicornultrafoundation/go-hashgraph/hash"
 )
 
 // SetEventConfirmedOn stores confirmed event hash.
