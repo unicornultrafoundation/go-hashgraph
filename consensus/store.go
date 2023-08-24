@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/ethereum/go-ethereum/rlp"
-
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/memorydb"
@@ -154,14 +153,6 @@ func (s *Store) get(table u2udb.Store, key []byte, to interface{}) interface{} {
 		s.crit(err)
 	}
 	return to
-}
-
-func (s *Store) has(table u2udb.Store, key []byte) bool {
-	res, err := table.Has(key)
-	if err != nil {
-		s.crit(err)
-	}
-	return res
 }
 
 func (s *Store) makeCache(weight uint, size int) *simplewlru.Cache {

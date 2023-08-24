@@ -59,6 +59,7 @@ func TestHashgraphRandom_2_8_10(t *testing.T) {
 }
 
 func testHashgraphRandom(t *testing.T, weights []pos.Weight, cheatersCount int) {
+	t.Helper()
 	testConsensusRandomAndReset(t, weights, false, cheatersCount, false)
 	testConsensusRandomAndReset(t, weights, false, cheatersCount, true)
 	testConsensusRandomAndReset(t, weights, true, 0, false)
@@ -67,6 +68,7 @@ func testHashgraphRandom(t *testing.T, weights []pos.Weight, cheatersCount int) 
 
 // TestConsensus 's possibility to get consensus in general on any event order.
 func testConsensusRandomAndReset(t *testing.T, weights []pos.Weight, mutateWeights bool, cheatersCount int, reset bool) {
+	t.Helper()
 	assertar := assert.New(t)
 
 	const lchCount = 3
@@ -75,7 +77,7 @@ func testConsensusRandomAndReset(t *testing.T, weights []pos.Weight, mutateWeigh
 	lchs := make([]*TestConsensus, 0, lchCount)
 	inputs := make([]*EventStore, 0, lchCount)
 	for i := 0; i < lchCount; i++ {
-		lch, _, input := FakeConsensus(nodes, weights)
+		lch, _, input, _ := FakeConsensus(nodes, weights)
 		lchs = append(lchs, lch)
 		inputs = append(inputs, input)
 	}
@@ -107,7 +109,7 @@ func testConsensusRandomAndReset(t *testing.T, weights []pos.Weight, mutateWeigh
 		parentCount = len(nodes)
 	}
 	epochStates := map[idx.Epoch]*EpochState{}
-	r := rand.New(rand.NewSource(int64(len(nodes) + cheatersCount)))
+	r := rand.New(rand.NewSource(int64(len(nodes) + cheatersCount))) // nolint:gosec
 	for epoch := idx.Epoch(1); epoch <= idx.Epoch(epochs); epoch++ {
 		tdag.ForEachRandFork(nodes, nodes[:cheatersCount], eventCount, parentCount, 10, r, tdag.ForEachEvent{
 			Process: func(e dag.Event, name string) {
@@ -173,6 +175,7 @@ func reorder(events dag.Events) dag.Events {
 }
 
 func compareResults(t *testing.T, lchs []*TestConsensus) {
+	t.Helper()
 	assertar := assert.New(t)
 
 	for i := 0; i < len(lchs)-1; i++ {

@@ -1,8 +1,6 @@
 package wmedian
 
-import (
-	"github.com/unicornultrafoundation/go-hashgraph/native/pos"
-)
+import "github.com/unicornultrafoundation/go-hashgraph/native/pos"
 
 type WeightedValue interface {
 	Weight() pos.Weight

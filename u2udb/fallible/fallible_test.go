@@ -3,39 +3,73 @@ package fallible
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb"
-
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/memorydb"
 )
 
 func TestFallible(t *testing.T) {
-	assertar := assert.New(t)
+	require := require.New(t)
 
 	var (
-		key = []byte("test-key")
-		val = []byte("test-value")
-		db  u2udb.Store
-		err error
+		key  = []byte("test-key")
+		key2 = []byte("test-key-2")
+		val  = []byte("test-value")
+		db   u2udb.Store
+		err  error
 	)
 
 	mem := memorydb.New()
 	w := Wrap(mem)
 	db = w
 
-	_, err = db.Get(key)
-	assertar.NoError(err)
+	var v []byte
+	v, err = db.Get(key)
+	require.Nil(v)
+	require.NoError(err)
 
-	assertar.Panics(func() {
-		db.Put(key, val)
+	require.Panics(func() {
+		_ = db.Put(key, val)
 	})
 
 	w.SetWriteCount(1)
 
 	err = db.Put(key, val)
-	assertar.NoError(err)
+	require.NoError(err)
 
-	assertar.Panics(func() {
-		err = db.Put(key, val)
+	require.Panics(func() {
+		_ = db.Put(key, val)
 	})
+
+	err = db.Delete(key)
+	require.Nil(err)
+
+	count := w.GetWriteCount()
+	require.Equal(-1, count)
+
+	require.Panics(func() {
+		db.Close()
+	})
+
+	require.Panics(func() {
+		db.Drop()
+	})
+
+	w.SetWriteCount(2)
+	count = w.GetWriteCount()
+	require.Equal(2, count)
+
+	err = db.Put(key, val)
+	require.NoError(err)
+
+	err = db.Put(key2, val)
+	require.NoError(err)
+
+	iterator := db.NewIterator([]byte("test"), nil)
+
+	iterator.Next()
+	require.Equal(key, iterator.Key())
+
+	iterator.Next()
+	require.Equal(key2, iterator.Key())
 }

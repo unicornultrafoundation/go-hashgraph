@@ -248,6 +248,7 @@ func TestHashgraphRandomRoots(t *testing.T) {
 // - "." - separator;
 // - tail - makes name unique;
 func testSpecialNamedRoots(t *testing.T, scheme string) {
+	t.Helper()
 	//logger.SetTestMode(t)
 	assertar := assert.New(t)
 
@@ -266,7 +267,7 @@ func testSpecialNamedRoots(t *testing.T, scheme string) {
 	// get nodes only
 	nodes, _, _ := tdag.ASCIIschemeToDAG(scheme)
 	// init consensus
-	lch, _, input := FakeConsensus(nodes, nil)
+	lch, _, input, _ := FakeConsensus(nodes, nil)
 
 	// process events
 	_, _, names := tdag.ASCIIschemeForEach(scheme, tdag.ForEachEvent{

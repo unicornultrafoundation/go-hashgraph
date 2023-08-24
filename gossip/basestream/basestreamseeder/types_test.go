@@ -5,7 +5,6 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
-
 	"github.com/unicornultrafoundation/go-hashgraph/gossip/basestream"
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
 	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
@@ -34,13 +33,9 @@ type testPayload struct {
 }
 
 func (p testPayload) AddEvent(id hash.Event, event dag.Event) {
-	p.IDs = append(p.IDs, id)
-	p.Events = append(p.Events, event)
-	p.Size += uint64(event.Size())
-}
-
-func (p testPayload) AddID(id hash.Event) {
-	p.IDs = append(p.IDs, id)
+	p.IDs = append(p.IDs, id)          // nolint:staticcheck
+	p.Events = append(p.Events, event) // nolint:staticcheck
+	p.Size += uint64(event.Size())     // nolint:staticcheck
 }
 
 func (p testPayload) Len() int {
