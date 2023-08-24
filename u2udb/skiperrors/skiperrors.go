@@ -33,7 +33,7 @@ func (f *readWrapper) skip(got error) bool {
 	}
 
 	for _, exp := range f.errs {
-		if got == exp || got.Error() == exp.Error() {
+		if got == exp || got.Error() == exp.Error() { // nolint:errorlint
 			return true
 		}
 	}

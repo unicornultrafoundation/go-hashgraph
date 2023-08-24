@@ -1,6 +1,6 @@
 package table
 
-//go:generate go run github.com/golang/mock/mockgen -package=table -destination=mock_test.go github.com/unicornultrafoundation/go-hashgraph/u2udb DBProducer,DropableStore
+//go:generate go run github.com/golang/mock/mockgen -package=table -destination=mock_test.go github.com/Fantom-foundation/lachesis-base/u2udb DBProducer,DropableStore
 
 import (
 	"testing"

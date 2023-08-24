@@ -1,6 +1,8 @@
 package multidb
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func (p *Producer) verifyRecords(oldDBRecords map[DBLocator][]TableRecord) error {
 	for oldLoc, records := range oldDBRecords {
@@ -26,18 +28,34 @@ func (p *Producer) getRecords() (map[DBLocator][]TableRecord, error) {
 		for _, name := range producer.Names() {
 			db, err := producer.OpenDB(name)
 			if err != nil {
-				return nil, fmt.Errorf("failed to open DB %s: %v", name, err)
+				return nil, fmt.Errorf("failed to open DB %s: %w", name, err)
 			}
-			defer db.Close()
-			records, err := ReadTablesList(db, p.tableRecordsKey)
-			if err != nil {
-				return nil, fmt.Errorf("failed to read tables for %s: %v", name, err)
+
+			var extErr error
+			func() {
+				defer func() {
+					err := db.Close()
+					if err != nil {
+						extErr = fmt.Errorf("failed to close DB %s/%s: %w", typ, name, err)
+					}
+				}()
+
+				records, err := ReadTablesList(db, p.tableRecordsKey)
+				if err != nil {
+					extErr = fmt.Errorf("failed to read tables for %s: %w", name, err)
+					return
+				}
+
+				locator := DBLocator{
+					Type: typ,
+					Name: name,
+				}
+				dbRecords[locator] = records
+			}()
+
+			if extErr != nil {
+				return nil, extErr
 			}
-			locator := DBLocator{
-				Type: typ,
-				Name: name,
-			}
-			dbRecords[locator] = records
 		}
 	}
 	return dbRecords, nil

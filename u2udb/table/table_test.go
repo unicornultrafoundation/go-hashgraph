@@ -11,7 +11,6 @@ import (
 	"github.com/status-im/keycard-go/hexutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
 	u2udb "github.com/unicornultrafoundation/go-hashgraph/u2udb"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/flushable"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/leveldb"
@@ -40,13 +39,13 @@ func tempLevelDB(name string) *leveldb.Database {
 
 func TestTable(t *testing.T) {
 	prefix0 := map[string][]byte{
-		"00": []byte{0},
-		"01": []byte{0, 1},
-		"02": []byte{0, 1, 2},
-		"03": []byte{0, 1, 2, 3},
+		"00": {0},
+		"01": {0, 1},
+		"02": {0, 1, 2},
+		"03": {0, 1, 2, 3},
 	}
 	prefix1 := map[string][]byte{
-		"10": []byte{0, 1, 2, 3, 4},
+		"10": {0, 1, 2, 3, 4},
 	}
 	testData := join(prefix0, prefix1)
 

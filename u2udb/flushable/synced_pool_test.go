@@ -1,4 +1,4 @@
-package memorydb
+package flushable
 
 import (
 	"testing"
@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/unicornultrafoundation/go-hashgraph/common/bigendian"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb"
-	"github.com/unicornultrafoundation/go-hashgraph/u2udb/flushable"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/table"
 )
 
@@ -19,8 +18,12 @@ func TestSyncedPoolUnderlying(t *testing.T) {
 		tbname  = "table"
 	)
 
-	dbs := NewProducer("")
-	pool := flushable.NewSyncedPool(dbs, []byte("flushID"))
+	dbs := dbProducer("")
+	pool := NewSyncedPool(dbs, []byte("flushID"))
+	defer func() {
+		err := pool.Close()
+		require.NoError(err)
+	}()
 
 	db1, err := pool.GetUnderlying(dbname1)
 	require.NoError(err)
@@ -29,6 +32,7 @@ func TestSyncedPoolUnderlying(t *testing.T) {
 	fdb1, err := pool.OpenDB(dbname1)
 	require.NoError(err)
 	w1 := table.New(fdb1, []byte(tbname))
+	defer w1.Close()
 
 	fdb2, err := pool.OpenDB(dbname2)
 	require.NoError(err)
@@ -38,11 +42,14 @@ func TestSyncedPoolUnderlying(t *testing.T) {
 	require.NoError(err)
 	r2 := table.New(db2, []byte(tbname))
 
+	_, err = pool.Initialize([]string{dbname1, dbname2}, nil)
+	require.NoError(err)
+
 	pushData := func(n uint32, w u2udb.Store) {
 		const size uint32 = 10
 		for i := size; i > 0; i-- {
 			key := bigendian.Uint32ToBytes(i + size*n)
-			_ = w.Put(key, key)
+			require.NoError(w.Put(key, key))
 		}
 	}
 

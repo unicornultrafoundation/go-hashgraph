@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/memorydb"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/table"
 )
@@ -39,6 +38,28 @@ func TestWrapper(t *testing.T) {
 	res, err = origin.Get(key2)
 	assertar.NoError(err)
 	assertar.Equal(val2, res)
+
+	// Delete key test
+	err = wrapped.Delete(key2)
+	assertar.NoError(err)
+
+	ok, err := wrapped.Has(key2)
+	assertar.NoError(err)
+	assertar.False(ok)
+
+	// Get snapshot test
+	_, err = wrapped.GetSnapshot()
+	assertar.NoError(err)
+
+	// Get stat test
+	stat, err := wrapped.Stat("")
+	assertar.NoError(err)
+	assertar.Equal(stat, "")
+
+	// Compact test
+
+	err = wrapped.Compact(nil, nil)
+	assertar.NoError(err)
 
 	mem.Close()
 
