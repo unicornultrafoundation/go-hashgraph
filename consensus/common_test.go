@@ -38,7 +38,7 @@ type TestConsensus struct {
 }
 
 // FakeConsensus creates empty consensus with mem store and equal weights of nodes in genesis.
-func FakeConsensus(nodes []idx.ValidatorID, weights []pos.Weight, mods ...memorydb.Mod) (*TestConsensus, *Store, *EventStore) {
+func FakeConsensus(nodes []idx.ValidatorID, weights []pos.Weight, mods ...memorydb.Mod) (*TestConsensus, *Store, *EventStore, *adapters.VectorToDagIndexer) {
 	validators := make(pos.ValidatorsBuilder, len(nodes))
 	for i, v := range nodes {
 		if weights == nil {
@@ -67,7 +67,8 @@ func FakeConsensus(nodes []idx.ValidatorID, weights []pos.Weight, mods ...memory
 	input := NewEventStore()
 
 	config := LiteConfig()
-	lch := NewIndexed(store, input, &adapters.VectorToDagIndexer{vecfc.NewIndex(crit, vecfc.LiteConfig())}, crit, config)
+	dagIndexer := &adapters.VectorToDagIndexer{Index: vecfc.NewIndex(crit, vecfc.LiteConfig())}
+	lch := NewIndexed(store, input, dagIndexer, crit, config)
 
 	extended := &TestConsensus{
 		Indexed:     lch,
@@ -107,11 +108,11 @@ func FakeConsensus(nodes []idx.ValidatorID, weights []pos.Weight, mods ...memory
 		panic(err)
 	}
 
-	return extended, store, input
+	return extended, store, input, dagIndexer
 }
 
 func mutateValidators(validators *pos.Validators) *pos.Validators {
-	r := rand.New(rand.NewSource(int64(validators.TotalWeight())))
+	r := rand.New(rand.NewSource(int64(validators.TotalWeight()))) // nolint:gosec
 	builder := pos.NewBuilder()
 	for _, vid := range validators.IDs() {
 		stake := uint64(validators.Get(vid))*uint64(500+r.Intn(500))/1000 + 1

@@ -1,8 +1,6 @@
 package cachescale
 
-import (
-	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
-)
+import "github.com/unicornultrafoundation/go-hashgraph/native/idx"
 
 type Func interface {
 	I(int) int

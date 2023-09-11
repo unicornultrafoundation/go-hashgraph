@@ -11,6 +11,7 @@ import (
 	"github.com/unicornultrafoundation/go-hashgraph/native/pos"
 	"github.com/unicornultrafoundation/go-hashgraph/types"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb"
+	"github.com/unicornultrafoundation/go-hashgraph/u2udb/flushable"
 )
 
 var _ types.Consensus = (*Indexed)(nil)
@@ -33,7 +34,7 @@ type DagIndexer interface {
 	Flush()
 	DropNotFlushed()
 
-	Reset(validators *pos.Validators, db u2udb.Store, getEvent func(hash.Event) dag.Event)
+	Reset(validators *pos.Validators, db u2udb.FlushableKVStore, getEvent func(hash.Event) dag.Event)
 }
 
 // New creates Indexed instance.
@@ -88,7 +89,7 @@ func (p *Indexed) Bootstrap(callback types.ConsensusCallbacks) error {
 			if base.EpochDBLoaded != nil {
 				base.EpochDBLoaded(epoch)
 			}
-			p.dagIndexer.Reset(p.store.GetValidators(), p.store.epochTable.VectorIndex, p.input.GetEvent)
+			p.dagIndexer.Reset(p.store.GetValidators(), flushable.Wrap(p.store.epochTable.VectorIndex), p.input.GetEvent)
 		},
 	}
 	return p.Consensus.BootstrapWithOrderer(callback, ordererCallbacks)

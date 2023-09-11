@@ -12,10 +12,10 @@ import (
 
 	"github.com/unicornultrafoundation/go-u2u/libs/common"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/syndtr/goleveldb/leveldb/opt"
-	"github.com/unicornultrafoundation/go-hashgraph/u2udb"
-
 	"github.com/unicornultrafoundation/go-hashgraph/common/bigendian"
+	"github.com/unicornultrafoundation/go-hashgraph/u2udb"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/leveldb"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/table"
 )
@@ -87,7 +87,7 @@ func TestFlushable(t *testing.T) {
 	tablesNum := len(dbsTables[0])
 
 	// use the same seed for determinism
-	rand := rand.New(rand.NewSource(0))
+	rand := rand.New(rand.NewSource(0)) // nolint:gosec
 
 	// words dictionary
 	prefixes := [][]byte{
@@ -266,11 +266,12 @@ func TestFlushable(t *testing.T) {
 }
 
 func TestFlushableIterator(t *testing.T) {
-	assertar := assert.New(t)
+	require := require.New(t)
 
 	disk := dbProducer("TestFlushableIterator")
 
-	leveldb, _ := disk.OpenDB("1")
+	leveldb, err := disk.OpenDB("1")
+	require.NoError(err)
 	defer leveldb.Drop()
 	defer leveldb.Close()
 
@@ -300,25 +301,20 @@ func TestFlushableIterator(t *testing.T) {
 	expected := allkeys[1 : len(allkeys)-1]
 
 	for _, key := range expected {
-		leveldb.Put(key, []byte("in-order"))
+		require.NoError(leveldb.Put(key, []byte("in-order")))
 	}
 
-	flushable2.Put(veryFirstKey, []byte("first"))
-	flushable2.Put(veryLastKey, []byte("last"))
+	require.NoError(flushable2.Put(veryFirstKey, []byte("first")))
+	require.NoError(flushable2.Put(veryLastKey, []byte("last")))
 
 	it := flushable1.NewIterator(nil, nil)
 	defer it.Release()
 
-	err := flushable2.Flush()
-	if !assertar.NoError(err) {
-		return
-	}
+	require.NoError(flushable2.Flush())
 
 	for i := 0; it.Next(); i++ {
-		if !assertar.Equal(expected[i], it.Key()) ||
-			!assertar.Equal([]byte("in-order"), it.Value()) {
-			break
-		}
+		require.Equal(expected[i], it.Key())
+		require.Equal([]byte("in-order"), it.Value())
 	}
 }
 

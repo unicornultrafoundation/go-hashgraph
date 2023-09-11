@@ -156,14 +156,6 @@ func (s *Store) get(table u2udb.Store, key []byte, to interface{}) interface{} {
 	return to
 }
 
-func (s *Store) has(table u2udb.Store, key []byte) bool {
-	res, err := table.Has(key)
-	if err != nil {
-		s.crit(err)
-	}
-	return res
-}
-
 func (s *Store) makeCache(weight uint, size int) *simplewlru.Cache {
 	cache, err := simplewlru.New(weight, size)
 	if err != nil {

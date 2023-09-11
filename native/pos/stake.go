@@ -61,3 +61,14 @@ func (s *WeightCounter) HasQuorum() bool {
 func (s *WeightCounter) Sum() Weight {
 	return s.sum
 }
+
+// NumCounted of validators
+func (s *WeightCounter) NumCounted() int {
+	num := 0
+	for _, counted := range s.already {
+		if counted {
+			num++
+		}
+	}
+	return num
+}

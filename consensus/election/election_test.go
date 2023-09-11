@@ -180,6 +180,7 @@ func testProcessRoot(
 	weights weights,
 	dagAscii string,
 ) {
+	t.Helper()
 	assertar := assert.New(t)
 
 	// events:

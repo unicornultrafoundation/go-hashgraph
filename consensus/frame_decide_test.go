@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
 	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
 	"github.com/unicornultrafoundation/go-hashgraph/native/dag/tdag"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
@@ -55,10 +54,11 @@ func TestConfirmBlocks_2_8_10(t *testing.T) {
 }
 
 func testConfirmBlocks(t *testing.T, weights []pos.Weight, cheatersCount int) {
+	t.Helper()
 	assertar := assert.New(t)
 
 	nodes := tdag.GenNodes(len(weights))
-	lch, _, input := FakeConsensus(nodes, weights)
+	lch, _, input, _ := FakeConsensus(nodes, weights)
 
 	var (
 		frames []idx.Frame
@@ -76,7 +76,7 @@ func testConfirmBlocks(t *testing.T, weights []pos.Weight, cheatersCount int) {
 	if parentCount > len(nodes) {
 		parentCount = len(nodes)
 	}
-	r := rand.New(rand.NewSource(int64(len(nodes) + cheatersCount)))
+	r := rand.New(rand.NewSource(int64(len(nodes) + cheatersCount))) // nolint:gosec
 	tdag.ForEachRandFork(nodes, nodes[:cheatersCount], eventCount, parentCount, 10, r, tdag.ForEachEvent{
 		Process: func(e dag.Event, name string) {
 			input.SetEvent(e)

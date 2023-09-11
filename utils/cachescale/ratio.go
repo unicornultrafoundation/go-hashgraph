@@ -1,8 +1,6 @@
 package cachescale
 
-import (
-	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
-)
+import "github.com/unicornultrafoundation/go-hashgraph/native/idx"
 
 // Ratio alters the cache sizes proportionally to a ratio
 type Ratio struct {

@@ -6,10 +6,9 @@ import (
 
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
 	"github.com/unicornultrafoundation/go-hashgraph/native/dag"
+	"github.com/unicornultrafoundation/go-hashgraph/u2udb"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 	"github.com/unicornultrafoundation/go-hashgraph/native/pos"
-	"github.com/unicornultrafoundation/go-hashgraph/u2udb"
-	"github.com/unicornultrafoundation/go-hashgraph/u2udb/flushable"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/table"
 )
 
@@ -20,7 +19,6 @@ type Callbacks struct {
 	SetLowestAfter   func(hash.Event, LowestAfterI)
 	NewHighestBefore func(idx.Validator) HighestBeforeI
 	NewLowestAfter   func(idx.Validator) LowestAfterI
-	OnDbReset        func(db u2udb.Store)
 	OnDropNotFlushed func()
 }
 
@@ -53,18 +51,15 @@ func NewIndex(crit func(error), callbacks Callbacks) *Engine {
 }
 
 // Reset resets buffers.
-func (vi *Engine) Reset(validators *pos.Validators, db u2udb.Store, getEvent func(hash.Event) dag.Event) {
+func (vi *Engine) Reset(validators *pos.Validators, db u2udb.FlushableKVStore, getEvent func(hash.Event) dag.Event) {
 	// use wrapper to be able to drop failed events by dropping cache
 	vi.getEvent = getEvent
-	vi.vecDb = flushable.WrapWithDrop(db, func() {})
+	vi.vecDb = db
 	vi.validators = validators
 	vi.validatorIdxs = validators.Idxs()
 	vi.DropNotFlushed()
 
 	table.MigrateTables(&vi.table, vi.vecDb)
-	if vi.callback.OnDbReset != nil {
-		vi.callback.OnDbReset(vi.vecDb)
-	}
 }
 
 // Add calculates vector clocks for the event and saves into DB.
@@ -149,6 +144,9 @@ func (vi *Engine) fillEventVectors(e dag.Event) (allVecs, error) {
 	}
 
 	meBranchID, err := vi.fillGlobalBranchID(e, meIdx)
+	if err != nil {
+		return myVecs, err
+	}
 
 	// pre-load parents into RAM for quick access
 	parentsVecs := make([]HighestBeforeI, len(e.Parents()))
@@ -171,7 +169,7 @@ func (vi *Engine) fillEventVectors(e dag.Event) (allVecs, error) {
 	}
 	// Detect forks, which were not observed by parents
 	if vi.AtLeastOneFork() {
-		for n := idx.Validator(0); n < idx.Validator(vi.validators.Len()); n++ {
+		for n := idx.Validator(0); n < vi.validators.Len(); n++ {
 			if len(vi.bi.BranchIDByCreators[n]) <= 1 {
 				continue
 			}
@@ -183,7 +181,9 @@ func (vi *Engine) fillEventVectors(e dag.Event) (allVecs, error) {
 				}
 			}
 		}
-		for n := idx.Validator(0); n < idx.Validator(vi.validators.Len()); n++ {
+
+	nextCreator:
+		for n := idx.Validator(0); n < vi.validators.Len(); n++ {
 			if myVecs.before.IsForkDetected(n) {
 				continue
 			}
@@ -200,11 +200,10 @@ func (vi *Engine) fillEventVectors(e dag.Event) (allVecs, error) {
 					}
 					if myVecs.before.MinSeq(a) <= myVecs.before.Seq(b) && myVecs.before.MinSeq(b) <= myVecs.before.Seq(a) {
 						vi.setForkDetected(myVecs.before, n)
-						goto nextCreator
+						continue nextCreator
 					}
 				}
 			}
-		nextCreator:
 		}
 	}
 
