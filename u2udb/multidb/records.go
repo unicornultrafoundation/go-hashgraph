@@ -1,7 +1,7 @@
 package multidb
 
 import (
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/unicornultrafoundation/go-u2u/libs/rlp"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb"
 )
 
