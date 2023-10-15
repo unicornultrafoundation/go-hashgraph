@@ -3,7 +3,8 @@ package vecengine
 import (
 	"errors"
 
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/unicornultrafoundation/go-u2u/rlp"
+
 	"github.com/unicornultrafoundation/go-hashgraph/hash"
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb"
