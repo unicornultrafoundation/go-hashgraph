@@ -6,8 +6,8 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/unicornultrafoundation/go-u2u/libs/common"
 	"github.com/stretchr/testify/assert"
+	"github.com/unicornultrafoundation/go-u2u/common"
 
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 )

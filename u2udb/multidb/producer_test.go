@@ -4,13 +4,13 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/unicornultrafoundation/go-u2u/libs/common"
 	"github.com/status-im/keycard-go/hexutils"
+	"github.com/stretchr/testify/assert"
+	"github.com/unicornultrafoundation/go-u2u/common"
+
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/flushable"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/memorydb"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNewProducer(t *testing.T) {
