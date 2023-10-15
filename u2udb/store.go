@@ -4,7 +4,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/unicornultrafoundation/go-u2u/libs/ethdb"
+	"github.com/unicornultrafoundation/go-u2u/ethdb"
 )
 
 var (
