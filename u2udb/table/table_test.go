@@ -7,10 +7,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/status-im/keycard-go/hexutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/unicornultrafoundation/go-u2u/common"
+
 	u2udb "github.com/unicornultrafoundation/go-hashgraph/u2udb"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/flushable"
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb/leveldb"

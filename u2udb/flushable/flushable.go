@@ -6,7 +6,8 @@ import (
 	"sync"
 
 	rbt "github.com/emirpasic/gods/trees/redblacktree"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/unicornultrafoundation/go-u2u/common"
+	
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb"
 )
 

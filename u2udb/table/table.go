@@ -3,7 +3,8 @@ package table
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/unicornultrafoundation/go-u2u/common"
+
 	"github.com/unicornultrafoundation/go-hashgraph/u2udb"
 )
 

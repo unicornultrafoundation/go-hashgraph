@@ -6,7 +6,7 @@ import (
 	"math"
 	"sort"
 
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/unicornultrafoundation/go-u2u/rlp"
 
 	"github.com/unicornultrafoundation/go-hashgraph/native/idx"
 )
