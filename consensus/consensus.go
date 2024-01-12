@@ -102,3 +102,16 @@ func (p *Consensus) OrdererCallbacks() OrdererCallbacks {
 		ApplyEvent: p.applyEvent,
 	}
 }
+
+func (p *Consensus) StartFrom(callback types.ConsensusCallbacks, epoch idx.Epoch, validators *pos.Validators) error {
+	return p.StartFromWithOrderer(callback, epoch, validators, p.OrdererCallbacks())
+}
+
+func (p *Consensus) StartFromWithOrderer(callback types.ConsensusCallbacks, epoch idx.Epoch, validators *pos.Validators, ordererCallbacks OrdererCallbacks) error {
+	err := p.Orderer.StartFrom(ordererCallbacks, epoch, validators)
+	if err != nil {
+		return err
+	}
+	p.callback = callback
+	return nil
+}
